@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Cropper from "react-easy-crop";
-import getCroppedImg from "../utils/cropimage";
+import getCroppedImg from "../utils/cropImage";
 
 function PlayerDashboard({
   loadMyProfile,
