@@ -41,23 +41,11 @@ function AdminDashboard({
   </button>
 
   <button
-  type="button"
+  className="load-button primary-brand-btn"
   onClick={approveAllPendingPlayers}
-  style={{
-    display: "inline-block",
-    width: "auto",
-    padding: "10px 18px",
-    fontSize: "15px",
-    borderRadius: "12px",
-    border: "none",
-    background: "#0b2545",
-    color: "white",
-    fontWeight: "700",
-    cursor: "pointer",
-    marginLeft: "12px"
-  }}
+  type="button"
 >
-  Approve All Pending
+  Approve All Pending Players
 </button>
 </div>
 

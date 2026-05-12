@@ -1042,24 +1042,7 @@ html, body, #root {
   max-height: 300px;
   margin-top: 12px;
 }
-.small-admin-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: auto !important;
-  max-width: fit-content !important;
-  padding: 8px 12px !important;
-  font-size: 0.85rem !important;
-  line-height: 1 !important;
-  border-radius: 999px;
-  border: none;
-  background: #0b2545;
-  color: white;
-  font-weight: 700;
-  cursor: pointer;
-  flex: 0 0 auto !important;
-  align-self: flex-start !important;
-}
+
 
 .small-admin-btn:hover {
   background: #123865;
