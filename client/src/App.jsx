@@ -8,7 +8,7 @@ import PlayerDashboard from "./components/PlayerDashboard";
 import AdminDashboard from "./components/AdminDashboard";
 import PlayerDetailPage from "./components/PlayerDetailPage";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import ChangePasswordPage from "./components/ChangePasswordPage";
 
 function App() {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const [adminSearchTerm, setAdminSearchTerm] = useState("");
 const [adminStatusFilter, setAdminStatusFilter] = useState("");
 const [adminPositionFilter, setAdminPositionFilter] = useState("");
 const [adminClassFilter, setAdminClassFilter] = useState("");
-
+const [newPassword, setNewPassword] = useState("");
 
  const [formData, setFormData] = useState({
   name: "",
@@ -133,11 +133,13 @@ const filteredPendingPlayers = pendingPlayers.filter((player) => {
 
   setMessage("Login successful ✅");
 
-  if (payload.role === "admin") {
-    navigate("/admin");
-  } else {
-    navigate("/dashboard");
-  }
+  if (data.mustChangePassword) {
+  navigate("/change-password");
+} else if (payload.role === "admin") {
+  navigate("/admin");
+} else {
+  navigate("/dashboard");
+}
 }
  else {
         setMessage(data.error || "Login failed");
@@ -303,7 +305,47 @@ touchdowns: formData.touchdowns === "" ? null : Number(formData.touchdowns),
     setMessage("Error uploading image");
   }
 };
+const handleChangePassword = async (e) => {
+  e.preventDefault();
 
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    setMessage("No token found. Please log in again.");
+    navigate("/login");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/change-password`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ newPassword })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setMessage(data.message || "Password updated ✅");
+      setNewPassword("");
+
+      const role = localStorage.getItem("role");
+
+      if (role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
+    } else {
+      setMessage(data.error || "Could not update password");
+    }
+  } catch (err) {
+    setMessage("Error updating password");
+  }
+};
   const loadPendingPlayers = async () => {
     const token = localStorage.getItem("token");
 
@@ -405,6 +447,16 @@ touchdowns: formData.touchdowns === "" ? null : Number(formData.touchdowns),
       {message && <div className="message-box">{message}</div>}
 
       <Routes>
+        <Route
+  path="/change-password"
+  element={
+    <ChangePasswordPage
+      newPassword={newPassword}
+      setNewPassword={setNewPassword}
+      handleChangePassword={handleChangePassword}
+    />
+  }
+/>
         <Route
           path="/"
           element={

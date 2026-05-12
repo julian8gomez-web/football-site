@@ -9,7 +9,8 @@ const cors = require("cors");
 const multer = require("multer");
 const streamifier = require("streamifier");
 const cloudinary = require("./config/cloudinary");
-
+//https://football-site-backend-sx8s.onrender.com
+//https://football-site-eight.vercel.app/
 const app = express();
 app.use(cors());
 app.use(express.json());

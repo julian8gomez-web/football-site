@@ -2,8 +2,8 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Player = require("../models/Player");
-
 const router = express.Router();
+const authMiddleware = require("../middleware/authMiddleware");
 
 // REGISTER USER + CREATE PLAYER PROFILE
 router.post("/register", async (req, res) => {
@@ -57,10 +57,36 @@ router.post("/login", async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.json({ token });
+    res.json({
+  token,
+  mustChangePassword: user.mustChangePassword
+});
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+router.put("/change-password", authMiddleware, async (req, res) => {
+  try {
+    const { newPassword } = req.body;
 
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ error: "Password must be at least 6 characters." });
+    }
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    user.password = newPassword;
+    user.mustChangePassword = false;
+
+    await user.save();
+
+    res.json({ message: "Password updated successfully ✅" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;
