@@ -41,9 +41,21 @@ function AdminDashboard({
   </button>
 
   <button
-  className="small-admin-btn"
-  onClick={approveAllPendingPlayers}
   type="button"
+  onClick={approveAllPendingPlayers}
+  style={{
+    display: "inline-block",
+    width: "auto",
+    padding: "10px 18px",
+    fontSize: "15px",
+    borderRadius: "12px",
+    border: "none",
+    background: "#0b2545",
+    color: "white",
+    fontWeight: "700",
+    cursor: "pointer",
+    marginLeft: "12px"
+  }}
 >
   Approve All Pending
 </button>
