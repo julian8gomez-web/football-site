@@ -41,12 +41,12 @@ function AdminDashboard({
   </button>
 
   <button
-    className="primary-brand-btn"
-    onClick={approveAllPendingPlayers}
-    type="button"
-  >
-    Approve All Pending Players
-  </button>
+  className="small-admin-btn"
+  onClick={approveAllPendingPlayers}
+  type="button"
+>
+  Approve All Pending
+</button>
 </div>
 
       <div className="card" style={{ marginBottom: "24px" }}>
