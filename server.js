@@ -215,7 +215,30 @@ app.put("/admin/approve-player/:id", authMiddleware, adminMiddleware, async (req
     res.status(500).json({ error: err.message });
   }
 });
+app.put("/admin/approve-all-pending", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const pendingPlayers = await Player.find({ status: "pending" });
 
+    for (const player of pendingPlayers) {
+      const updatesToApply = player.pendingUpdates || {};
+
+      for (const key in updatesToApply) {
+        player[key] = updatesToApply[key];
+      }
+
+      player.pendingUpdates = {};
+      player.status = "approved";
+
+      await player.save();
+    }
+
+    res.json({
+      message: `${pendingPlayers.length} pending players approved ✅`
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 app.get("/approved-players", async (req, res) => {
   try {
     const approvedPlayers = await Player.find({ status: "approved" });

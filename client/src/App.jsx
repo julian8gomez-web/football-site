@@ -373,7 +373,33 @@ const handleChangePassword = async (e) => {
       setMessage("Error loading pending players");
     }
   };
+const approveAllPendingPlayers = async () => {
+  const token = localStorage.getItem("token");
 
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/approve-all-pending`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setMessage(data.message || "All pending players approved ✅");
+      loadPendingPlayers();
+
+      const approvedRes = await fetch(`${import.meta.env.VITE_API_URL}/approved-players`);
+      const approvedData = await approvedRes.json();
+      setApprovedPlayers(approvedData);
+    } else {
+      setMessage(data.error || "Could not approve all pending players");
+    }
+  } catch (err) {
+    setMessage("Error approving all pending players");
+  }
+};
   const approvePlayer = async (id) => {
     const token = localStorage.getItem("token");
 
@@ -523,6 +549,7 @@ const handleChangePassword = async (e) => {
   pendingPlayers={filteredPendingPlayers}
   approvePlayer={approvePlayer}
   rejectPlayer={rejectPlayer}
+  approveAllPendingPlayers={approveAllPendingPlayers}
   adminSearchTerm={adminSearchTerm}
   setAdminSearchTerm={setAdminSearchTerm}
   adminStatusFilter={adminStatusFilter}

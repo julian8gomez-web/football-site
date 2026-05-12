@@ -3,6 +3,7 @@ function AdminDashboard({
   pendingPlayers,
   approvePlayer,
   rejectPlayer,
+  approveAllPendingPlayers,
   adminSearchTerm,
   setAdminSearchTerm,
   adminStatusFilter,
@@ -34,9 +35,19 @@ function AdminDashboard({
     <div>
       <h2 className="section-title">Admin Dashboard</h2>
 
-      <button className="load-button primary-brand-btn" onClick={loadPendingPlayers}>
-        Load Pending Players
-      </button>
+      <div className="action-row" style={{ marginBottom: "20px" }}>
+  <button className="load-button primary-brand-btn" onClick={loadPendingPlayers}>
+    Load Pending Players
+  </button>
+
+  <button
+    className="primary-brand-btn"
+    onClick={approveAllPendingPlayers}
+    type="button"
+  >
+    Approve All Pending Players
+  </button>
+</div>
 
       <div className="card" style={{ marginBottom: "24px" }}>
         <div className="form-stack">
