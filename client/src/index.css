@@ -1047,3 +1047,48 @@ html, body, #root {
 .small-admin-btn:hover {
   background: #123865;
 }
+.admin-player-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.admin-player-subtext {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.admin-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.status-approved {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-unknown {
+  background: #e5e7eb;
+  color: #374151;
+}

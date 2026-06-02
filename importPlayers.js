@@ -12,6 +12,13 @@ function generateTempPassword() {
   const randomNumber = Math.floor(1000 + Math.random() * 9000);
   return `Huskies${randomNumber}!`;
 }
+function generateSlug(name) {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
@@ -34,13 +41,14 @@ mongoose
             }
 
             const player = await Player.create({
-              name: row.name,
-              playerClass: row.playerClass,
-              position: row.position,
-              jerseyNumber: row.jerseyNumber,
-              location: "El Paso, TX",
-              status: "pending"
-            });
+  name: row.name,
+  slug: generateSlug(row.name),
+  playerClass: row.playerClass,
+  position: row.position,
+  jerseyNumber: row.jerseyNumber,
+  location: "El Paso, TX",
+  status: "pending"
+});
 
             const tempPassword =
   row.password && row.password.trim() !== ""

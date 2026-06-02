@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const playerSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  slug: {
+  type: String,
+  unique: true,
+  sparse: true
+},
 
   // basic public profile info
 position: String,

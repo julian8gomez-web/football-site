@@ -247,6 +247,22 @@ app.get("/approved-players", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+app.get("/player/:slug", async (req, res) => {
+  try {
+    const player = await Player.findOne({
+      slug: req.params.slug,
+      status: "approved"
+    });
+
+    if (!player) {
+      return res.status(404).json({ error: "Player not found" });
+    }
+
+    res.json(player);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 app.put("/admin/reject-player/:id", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const player = await Player.findById(req.params.id);

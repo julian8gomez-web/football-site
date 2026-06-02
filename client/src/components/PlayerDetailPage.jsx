@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-function PlayerDetailPage({ approvedPlayers }) {
-  const { id } = useParams();
+function PlayerDetailPage({ approvedPlayers, useSlug = false }) {
+  const { id, slug } = useParams();
   const navigate = useNavigate();
   const [showContact, setShowContact] = useState(false);
 
-  const player = approvedPlayers.find((p) => p._id === id);
+  const player = useSlug
+  ? approvedPlayers.find((p) => p.slug === slug)
+  : approvedPlayers.find((p) => p._id === id);
 
   if (!player) {
     return (
@@ -95,7 +97,19 @@ function PlayerDetailPage({ approvedPlayers }) {
                   {player.twitter}
                 </a>
               )}
-
+{player.slug && (
+  <button
+    className="detail-action-btn"
+    type="button"
+    onClick={() => {
+      const profileLink = `${window.location.origin}/player/${player.slug}`;
+      navigator.clipboard.writeText(profileLink);
+      alert("Profile link copied!");
+    }}
+  >
+    Copy Profile Link
+  </button>
+)}
               <button
                 className="detail-action-btn"
                 onClick={() => setShowContact(!showContact)}

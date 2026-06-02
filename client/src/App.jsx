@@ -478,7 +478,33 @@ const resetPlayerPassword = async (playerId) => {
       setMessage("Error rejecting player");
     }
   };
+const loadAllPlayers = async () => {
+  const token = localStorage.getItem("token");
 
+  if (!token) {
+    setMessage("No token found. Please log in first.");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/all-players`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setPendingPlayers(data);
+      setMessage("All players loaded ✅");
+    } else {
+      setMessage(data.error || "Could not load all players");
+    }
+  } catch (err) {
+    setMessage("Error loading all players");
+  }
+};
   return (
     <div className="app-container">
       <div className="app-header">
@@ -582,6 +608,7 @@ const resetPlayerPassword = async (playerId) => {
   adminClassFilter={adminClassFilter}
   setAdminClassFilter={setAdminClassFilter}
   resetPlayerPassword={resetPlayerPassword}
+  loadAllPlayers={loadAllPlayers}
 />
     </ProtectedRoute>
   }
@@ -591,6 +618,10 @@ const resetPlayerPassword = async (playerId) => {
           path="/players/:id"
           element={<PlayerDetailPage approvedPlayers={approvedPlayers} />}
         />
+        <Route
+  path="/player/:slug"
+  element={<PlayerDetailPage approvedPlayers={approvedPlayers} useSlug={true} />}
+/>
       </Routes>
       <footer className="site-footer">
   <div className="site-footer-inner">

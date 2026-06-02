@@ -13,6 +13,7 @@ function AdminDashboard({
   adminClassFilter,
   setAdminClassFilter,
   resetPlayerPassword,
+  loadAllPlayers,
 }) {
   const uniqueStatuses = [...new Set(
     pendingPlayers
@@ -34,7 +35,10 @@ function AdminDashboard({
 
   return (
     <div>
-      <h2 className="section-title">Admin Dashboard</h2>
+      <h2 className="section-title">Admin Player Management</h2>
+<p className="home-intro">
+  Manage player accounts, review pending updates, approve profiles, and reset passwords.
+</p>
 
       <div className="action-row" style={{ marginBottom: "20px" }}>
   <button className="load-button primary-brand-btn" onClick={loadPendingPlayers}>
@@ -42,12 +46,20 @@ function AdminDashboard({
   </button>
 
   <button
-  className="load-button primary-brand-btn"
-  onClick={approveAllPendingPlayers}
-  type="button"
->
-  Approve All Pending Players
-</button>
+    className="load-button primary-brand-btn"
+    onClick={loadAllPlayers}
+    type="button"
+  >
+    Load All Players
+  </button>
+
+  <button
+    className="load-button primary-brand-btn"
+    onClick={approveAllPendingPlayers}
+    type="button"
+  >
+    Approve All Pending Players
+  </button>
 </div>
 
       <div className="card" style={{ marginBottom: "24px" }}>
@@ -102,8 +114,18 @@ function AdminDashboard({
       ) : (
         pendingPlayers.map((p) => (
           <div key={p._id} className="card">
-            <h3>{p.name}</h3>
-            <p><strong>Status:</strong> {p.status}</p>
+            <div className="admin-player-header">
+  <div>
+    <h3>{p.name}</h3>
+    <p className="admin-player-subtext">
+      {p.position || "No position"} • Class {p.playerClass || "N/A"} • #{p.jerseyNumber || "N/A"}
+    </p>
+  </div>
+
+  <span className={`admin-status-badge status-${p.status || "unknown"}`}>
+    {p.status || "unknown"}
+  </span>
+</div>
 
             {p.changes && p.changes.length > 0 ? (
               <div style={{ marginTop: "16px" }}>
@@ -233,7 +255,7 @@ function AdminDashboard({
               <button className="reject-brand-btn" onClick={() => rejectPlayer(p._id)}>
                 Reject
               </button>
-              <button className="secondary-brand-btn"
+              <button className="primary-brand-btn"
               type="button" onClick={() => resetPlayerPassword(p._id)}>
               Reset Password
               </button>
