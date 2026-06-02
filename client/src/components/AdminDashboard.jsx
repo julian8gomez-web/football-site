@@ -11,7 +11,8 @@ function AdminDashboard({
   adminPositionFilter,
   setAdminPositionFilter,
   adminClassFilter,
-  setAdminClassFilter
+  setAdminClassFilter,
+  resetPlayerPassword,
 }) {
   const uniqueStatuses = [...new Set(
     pendingPlayers
@@ -231,6 +232,10 @@ function AdminDashboard({
               </button>
               <button className="reject-brand-btn" onClick={() => rejectPlayer(p._id)}>
                 Reject
+              </button>
+              <button className="secondary-brand-btn"
+              type="button" onClick={() => resetPlayerPassword(p._id)}>
+              Reset Password
               </button>
             </div>
           </div>

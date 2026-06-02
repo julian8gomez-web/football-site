@@ -287,7 +287,35 @@ app.put("/admin/reject-player/:id", authMiddleware, adminMiddleware, async (req,
     res.status(500).json({ error: err.message });
   }
 });
+function generateTempPassword() {
+  const randomNumber = Math.floor(1000 + Math.random() * 9000);
+  return `Huskies${randomNumber}!`;
+}
 
+app.put("/admin/reset-password/:playerId", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const user = await User.findOne({ playerId: req.params.playerId });
+
+    if (!user) {
+      return res.status(404).json({ error: "User account not found for this player." });
+    }
+
+    const tempPassword = generateTempPassword();
+
+    user.password = tempPassword;
+    user.mustChangePassword = true;
+
+    await user.save();
+
+    res.json({
+      message: "Password reset successfully ✅",
+      email: user.email,
+      tempPassword
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 app.get("/admin/all-players", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const players = await Player.find();

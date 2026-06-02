@@ -427,7 +427,30 @@ const approveAllPendingPlayers = async () => {
       setMessage("Error approving player");
     }
   };
+const resetPlayerPassword = async (playerId) => {
+  const token = localStorage.getItem("token");
 
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/reset-password/${playerId}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setMessage(
+        `Password reset ✅ Email: ${data.email} | Temporary Password: ${data.tempPassword}`
+      );
+    } else {
+      setMessage(data.error || "Could not reset password");
+    }
+  } catch (err) {
+    setMessage("Error resetting password");
+  }
+};
   const rejectPlayer = async (id) => {
     const token = localStorage.getItem("token");
 
@@ -558,6 +581,7 @@ const approveAllPendingPlayers = async () => {
   setAdminPositionFilter={setAdminPositionFilter}
   adminClassFilter={adminClassFilter}
   setAdminClassFilter={setAdminClassFilter}
+  resetPlayerPassword={resetPlayerPassword}
 />
     </ProtectedRoute>
   }
