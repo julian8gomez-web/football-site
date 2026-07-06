@@ -118,7 +118,12 @@ function AdminDashboard({
   <div>
     <h3>{p.name}</h3>
     <p className="admin-player-subtext">
-      {p.position || "No position"} • Class {p.playerClass || "N/A"} • #{p.jerseyNumber || "N/A"}
+      {p.position1
+  ? p.position2
+    ? `${p.position1}/${p.position2}`
+    : p.position1
+  : p.position || "No position"}{" "}
+• Class {p.playerClass || "N/A"} • #{p.jerseyNumber || "N/A"}
     </p>
   </div>
 

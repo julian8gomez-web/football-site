@@ -57,7 +57,32 @@ const [newPassword, setNewPassword] = useState("");
   tackles: "",
   sacks: "",
   interceptions: "",
-  touchdowns: ""
+  touchdowns: "",
+  // QB Stats
+passingCompletions: "",
+passingAttempts: "",
+passingTouchdowns: "",
+interceptionsThrown: "",
+
+// RB Stats
+carries: "",
+rushingTouchdowns: "",
+
+// WR / TE Stats
+receptions: "",
+receivingYards: "",
+receivingTouchdowns: "",
+
+// OL Stats
+pancakeBlocks: "",
+sacksAllowed: "",
+gamesStarted: "",
+
+// Defensive Stats
+tacklesForLoss: "",
+passBreakups: "",
+forcedFumbles: "",
+qbHurries: "",
 });
 
 useEffect(() => {
@@ -171,6 +196,8 @@ const filteredPendingPlayers = pendingPlayers.filter((player) => {
         setFormData({
           name: data.name || "",
           position: data.position || "",
+          position1: data.position1 || (data.position ? data.position.split("/")[0] || "" : ""),
+          position2: data.position2 || (data.position ? data.position.split("/")[1] || "" : ""),
           playerClass: data.playerClass || "",
           height: data.height || "",
           weight: data.weight || "",
@@ -191,8 +218,31 @@ const filteredPendingPlayers = pendingPlayers.filter((player) => {
           sacks: data.sacks || "",
           interceptions: data.interceptions || "",
           touchdowns: data.touchdowns || "",
-          position1: data.position ? data.position.split("/")[0] || "" : "",
-          position2: data.position ? data.position.split("/")[1] || "" : "",
+          // QB Stats
+          passingCompletions: data.passingCompletions || "",
+          passingAttempts: data.passingAttempts || "",
+          passingTouchdowns: data.passingTouchdowns || "",
+          interceptionsThrown: data.interceptionsThrown || "",
+
+// RB Stats
+          carries: data.carries || "",
+          rushingTouchdowns: data.rushingTouchdowns || "",
+
+// WR / TE Stats
+          receptions: data.receptions || "",
+          receivingYards: data.receivingYards || "",
+          receivingTouchdowns: data.receivingTouchdowns || "",
+
+// OL Stats
+          pancakeBlocks: data.pancakeBlocks || "",
+          sacksAllowed: data.sacksAllowed || "",
+          gamesStarted: data.gamesStarted || "",
+
+// Defensive Stats
+          tacklesForLoss: data.tacklesForLoss || "",
+          passBreakups: data.passBreakups || "",
+          forcedFumbles: data.forcedFumbles || "",
+          qbHurries: data.qbHurries || "",
           twitter: data.twitter || "",
           ncaaId: data.ncaaId || "",
           phoneNumber: data.phoneNumber || "",
@@ -231,6 +281,8 @@ const filteredPendingPlayers = pendingPlayers.filter((player) => {
     formData.position1 && formData.position2
       ? `${formData.position1}/${formData.position2}`
       : formData.position1 || "",
+      position1: formData.position1,
+position2: formData.position2,
   playerClass: formData.playerClass,
   height: formData.height,
   weight: formData.weight,

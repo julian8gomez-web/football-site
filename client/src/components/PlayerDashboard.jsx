@@ -12,6 +12,7 @@ function PlayerDashboard({
   setSelectedImage,
   handleImageUpload
 }) {
+  const [activeTab, setActiveTab] = useState("personal");
   const hasPendingUpdates =
   
     player &&
@@ -37,7 +38,47 @@ const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
               <strong>Pending Review:</strong> You have profile changes waiting for admin approval.
             </div>
           )}
+<div className="profile-tabs">
+  <button
+    type="button"
+    className={activeTab === "personal" ? "profile-tab active" : "profile-tab"}
+    onClick={() => setActiveTab("personal")}
+  >
+    Personal
+  </button>
 
+  <button
+    type="button"
+    className={activeTab === "testing" ? "profile-tab active" : "profile-tab"}
+    onClick={() => setActiveTab("testing")}
+  >
+    Athletic Testing
+  </button>
+
+  <button
+    type="button"
+    className={activeTab === "football" ? "profile-tab active" : "profile-tab"}
+    onClick={() => setActiveTab("football")}
+  >
+    Football Production
+  </button>
+
+  <button
+    type="button"
+    className={activeTab === "academics" ? "profile-tab active" : "profile-tab"}
+    onClick={() => setActiveTab("academics")}
+  >
+    Academics
+  </button>
+
+  <button
+    type="button"
+    className={activeTab === "recruiting" ? "profile-tab active" : "profile-tab"}
+    onClick={() => setActiveTab("recruiting")}
+  >
+    Recruiting & Exposure
+  </button>
+</div>
           <form onSubmit={handleUpdateProfile} className="form-stack">
             <div className="card">
               <h3 className="detail-section-title">Basic Information</h3>

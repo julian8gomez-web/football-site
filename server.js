@@ -92,6 +92,8 @@ app.put("/my-profile", authMiddleware, async (req, res) => {
   const allowedUpdates = [
   "name",
   "position",
+  "position1",
+  "position2",
   "playerClass",
   "height",
   "weight",
@@ -114,7 +116,27 @@ app.put("/my-profile", authMiddleware, async (req, res) => {
   "tackles",
   "sacks",
   "interceptions",
-  "touchdowns"
+  "touchdowns",
+  "passingCompletions",
+  "passingAttempts",
+  "passingTouchdowns",
+  "interceptionsThrown",
+
+  "carries",
+  "rushingTouchdowns",
+
+  "receptions",
+  "receivingYards",
+  "receivingTouchdowns",
+
+  "pancakeBlocks",
+  "sacksAllowed",
+  "gamesStarted",
+
+  "tacklesForLoss",
+  "passBreakups",
+  "forcedFumbles",
+  "qbHurries",
 ];
 
     const player = await Player.findById(user.playerId);

@@ -9,6 +9,24 @@ function PlayerDetailPage({ approvedPlayers, useSlug = false }) {
   const player = useSlug
   ? approvedPlayers.find((p) => p.slug === slug)
   : approvedPlayers.find((p) => p._id === id);
+  
+  const positions = player
+  ? [
+      player.position1,
+      player.position2,
+      ...(player.position ? player.position.split("/") : [])
+    ]
+      .filter(Boolean)
+      .map((p) => p.trim().toUpperCase())
+  : [];
+
+const isOffense = positions.some((p) =>
+  ["QB", "RB", "WR", "TE", "ATH"].includes(p)
+);
+
+const isDefense = positions.some((p) =>
+  ["DB", "CB", "S", "OLB", "MLB", "LB", "DE", "DL", "OLB", "MLB"].includes(p)
+);
 
   if (!player) {
     return (
@@ -276,56 +294,89 @@ function PlayerDetailPage({ approvedPlayers, useSlug = false }) {
         </div>
 
         <div className="detail-card">
-          <h3 className="detail-card-title">Football Production</h3>
+  <h3 className="detail-card-title">Football Production</h3>
 
-          {hasFootballStats ? (
-            <>
-              {player.passingYards !== undefined && player.passingYards !== null && (
-                <div className="detail-stat-row">
-                  <span className="detail-stat-label">Passing Yards</span>
-                  <span className="detail-stat-value">{player.passingYards}</span>
-                </div>
-              )}
+  {(() => {
+    const positions = [
+      player.position1,
+      player.position2,
+      ...(player.position ? player.position.split("/") : [])
+    ]
+      .filter(Boolean)
+      .map((p) => p.trim().toUpperCase());
 
-              {player.rushingYards !== undefined && player.rushingYards !== null && (
-                <div className="detail-stat-row">
-                  <span className="detail-stat-label">Rushing Yards</span>
-                  <span className="detail-stat-value">{player.rushingYards}</span>
-                </div>
-              )}
+    const hasOffense = positions.some((p) =>
+      ["QB", "RB", "WR", "TE", "ATH"].includes(p)
+    );
 
-              {player.tackles !== undefined && player.tackles !== null && (
-                <div className="detail-stat-row">
-                  <span className="detail-stat-label">Tackles</span>
-                  <span className="detail-stat-value">{player.tackles}</span>
-                </div>
-              )}
+    const hasDefense = positions.some((p) =>
+      ["DB", "CB", "S", "OLB", "MLB", "LB", "DE", "DL"].includes(p)
+    );
 
-              {player.sacks !== undefined && player.sacks !== null && (
-                <div className="detail-stat-row">
-                  <span className="detail-stat-label">Sacks</span>
-                  <span className="detail-stat-value">{player.sacks}</span>
-                </div>
-              )}
+    const showStat = (label, value) => {
+      if (value === undefined || value === null || value === "") return null;
 
-              {player.interceptions !== undefined && player.interceptions !== null && (
-                <div className="detail-stat-row">
-                  <span className="detail-stat-label">Interceptions</span>
-                  <span className="detail-stat-value">{player.interceptions}</span>
-                </div>
-              )}
-
-              {player.touchdowns !== undefined && player.touchdowns !== null && (
-                <div className="detail-stat-row">
-                  <span className="detail-stat-label">Touchdowns</span>
-                  <span className="detail-stat-value">{player.touchdowns}</span>
-                </div>
-              )}
-            </>
-          ) : (
-            <p className="detail-empty">No football stats available yet.</p>
-          )}
+      return (
+        <div className="detail-stat-row">
+          <span className="detail-stat-label">{label}</span>
+          <span className="detail-stat-value">{value}</span>
         </div>
+      );
+    };
+
+    return (
+      <>
+        {hasOffense && (
+          <div style={{ marginBottom: "20px" }}>
+            <h4 className="detail-subsection-title">Offensive Production</h4>
+
+            {positions.includes("QB") && (
+              <>
+                {showStat("Passing Yards", player.passingYards)}
+                {showStat("Touchdowns", player.touchdowns)}
+                {showStat("Interceptions", player.interceptions)}
+              </>
+            )}
+
+            {(positions.includes("RB") || positions.includes("ATH")) && (
+              <>
+                {showStat("Rushing Yards", player.rushingYards)}
+                {showStat("Touchdowns", player.touchdowns)}
+              </>
+            )}
+
+            {(positions.includes("WR") || positions.includes("TE")) && (
+              <>
+                {showStat("Touchdowns", player.touchdowns)}
+              </>
+            )}
+          </div>
+        )}
+
+        {hasDefense && (
+          <div>
+            <h4 className="detail-subsection-title">Defensive Production</h4>
+
+            {showStat("Tackles", player.tackles)}
+            {showStat("Sacks", player.sacks)}
+            {showStat("Interceptions", player.interceptions)}
+          </div>
+        )}
+
+        {!hasOffense && !hasDefense && (
+          <>
+            {showStat("Passing Yards", player.passingYards)}
+            {showStat("Rushing Yards", player.rushingYards)}
+            {showStat("Tackles", player.tackles)}
+            {showStat("Sacks", player.sacks)}
+            {showStat("Interceptions", player.interceptions)}
+            {showStat("Touchdowns", player.touchdowns)}
+          </>
+        )}
+      </>
+    );
+  })()}
+</div>
       </div>
     </div>
   );

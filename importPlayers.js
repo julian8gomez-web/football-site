@@ -45,6 +45,8 @@ mongoose
   slug: generateSlug(row.name),
   playerClass: row.playerClass,
   position: row.position,
+  position1: row.position,
+  position2: row.position2 || "",
   jerseyNumber: row.jerseyNumber,
   location: "El Paso, TX",
   status: "pending"

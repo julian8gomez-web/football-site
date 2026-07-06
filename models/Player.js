@@ -10,6 +10,8 @@ const playerSchema = new mongoose.Schema({
 
   // basic public profile info
 position: String,
+position1: String,
+position2: String,
 playerClass: String,
 height: String,
 weight: String,
@@ -38,6 +40,32 @@ tackles: Number,
 sacks: Number,
 interceptions: Number,
 touchdowns: Number,
+
+// QB Stats
+passingCompletions: Number,
+passingAttempts: Number,
+passingTouchdowns: Number,
+interceptionsThrown: Number,
+
+// RB Stats
+carries: Number,
+rushingTouchdowns: Number,
+
+// WR / TE Stats
+receptions: Number,
+receivingYards: Number,
+receivingTouchdowns: Number,
+
+// OL Stats
+pancakeBlocks: Number,
+sacksAllowed: Number,
+gamesStarted: Number,
+
+// Defensive Stats
+tacklesForLoss: Number,
+passBreakups: Number,
+forcedFumbles: Number,
+qbHurries: Number,
 
   pendingUpdates: {
     type: Object,

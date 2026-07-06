@@ -1092,3 +1092,25 @@ html, body, #root {
   background: #e5e7eb;
   color: #374151;
 }
+.profile-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.profile-tab {
+  border: 1px solid #d6e2f0;
+  background: white;
+  color: #0b2545;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.profile-tab.active {
+  background: #0b2545;
+  color: white;
+  border-color: #0b2545;
+}
