@@ -29,6 +29,7 @@ emailAddress: String,
 gpa: String,
 fortyTime: String,
 vertical: String,
+broadJump: String,
 benchMax: Number,
 cleanMax: Number,
 squatMax: Number,
@@ -66,7 +67,58 @@ tacklesForLoss: Number,
 passBreakups: Number,
 forcedFumbles: Number,
 qbHurries: Number,
+seasonStats: [
+  {
+    season: {
+  type: String,
+  required: true
+},
 
+    isCurrent: {
+      type: Boolean,
+      default: false
+    },
+
+    isLocked: {
+      type: Boolean,
+      default: false
+    },
+
+    // QB Stats
+    passingCompletions: Number,
+    passingAttempts: Number,
+    passingYards: Number,
+    passingTouchdowns: Number,
+    interceptionsThrown: Number,
+
+    // RB Stats
+    carries: Number,
+    rushingYards: Number,
+    rushingTouchdowns: Number,
+
+    // WR / TE Stats
+    receptions: Number,
+    receivingYards: Number,
+    receivingTouchdowns: Number,
+
+    // OL Stats
+    pancakeBlocks: Number,
+    sacksAllowed: Number,
+    gamesStarted: Number,
+
+    // Defense
+    tackles: Number,
+    tacklesForLoss: Number,
+    sacks: Number,
+    interceptions: Number,
+    passBreakups: Number,
+    forcedFumbles: Number,
+    qbHurries: Number,
+
+    // General / all-purpose
+    touchdowns: Number
+  }
+],
   pendingUpdates: {
     type: Object,
     default: {}

@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 function AdminDashboard({
   loadPendingPlayers,
   pendingPlayers,
@@ -15,6 +17,73 @@ function AdminDashboard({
   resetPlayerPassword,
   loadAllPlayers,
 }) {
+  const [currentSeason, setCurrentSeason] = useState(null);
+const [showSeasonConfirm, setShowSeasonConfirm] = useState(false);
+const [seasonConfirmText, setSeasonConfirmText] = useState("");
+const nextSeasonStartYear = currentSeason
+  ? currentSeason.startYear + 1
+  : null;
+
+const nextSeasonLabel = nextSeasonStartYear
+  ? `${nextSeasonStartYear}-${nextSeasonStartYear + 1}`
+  : "";
+  
+  const advanceSeason = async () => {
+  const token = localStorage.getItem("token");
+
+  if (!token || !currentSeason) return;
+
+  try {
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/admin/start-new-season`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          startYear: currentSeason.startYear + 1
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Could not advance the season.");
+      return;
+    }
+
+    setCurrentSeason(data.currentSeason || data.season);
+    setShowSeasonConfirm(false);
+    setSeasonConfirmText("");
+
+    alert(data.message || "Season advanced successfully.");
+  } catch (err) {
+    console.error("Advance season error:", err);
+    alert("Error connecting to the server.");
+  }
+};
+  useEffect(() => {
+    const loadCurrentSeason = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/season/current`
+        );
+        const data = await res.json();
+
+        if (res.ok) {
+          setCurrentSeason(data);
+        }
+      } catch (err) {
+        console.error("Failed to load current season:", err);
+      }
+    };
+
+    loadCurrentSeason();
+  }, []);
+
   const uniqueStatuses = [...new Set(
     pendingPlayers
       .map((p) => p.status)
@@ -39,6 +108,86 @@ function AdminDashboard({
 <p className="home-intro">
   Manage player accounts, review pending updates, approve profiles, and reset passwords.
 </p>
+<div className="card" style={{ marginBottom: "20px" }}>
+  <h3>Season Management</h3>
+  <p className="small-text">
+    Current Season: {currentSeason ? currentSeason.label : "Loading..."}
+  </p>
+
+  <div className="action-row">
+    <button
+  className="primary-brand-btn"
+  type="button"
+  onClick={() => {
+    setSeasonConfirmText("");
+    setShowSeasonConfirm(true);
+  }}
+  disabled={!currentSeason}
+>
+  Advance to Next Season
+</button>
+  </div>
+</div>
+{showSeasonConfirm && (
+  <div className="season-modal-overlay">
+    <div className="season-modal">
+      <h3>Advance to Next Season</h3>
+
+      <p>
+        Current Season:
+        <strong> {currentSeason?.label}</strong>
+      </p>
+
+      <p>
+        Next Season:
+        <strong> {nextSeasonLabel}</strong>
+      </p>
+
+      <div className="season-warning-box">
+        <strong>This action will:</strong>
+
+        <p>Lock the {currentSeason?.label} season.</p>
+        <p>Create the {nextSeasonLabel} season.</p>
+        <p>Create blank season statistics for every player.</p>
+      </div>
+
+      <label className="season-confirm-label">
+        Type <strong>ADVANCE</strong> to confirm:
+      </label>
+
+      <input
+        type="text"
+        value={seasonConfirmText}
+        onChange={(e) =>
+          setSeasonConfirmText(e.target.value.toUpperCase())
+        }
+        placeholder="Type ADVANCE"
+      />
+
+      <div className="action-row season-modal-actions">
+        <button
+          type="button"
+          className="secondary-brand-btn"
+          onClick={() => {
+            setShowSeasonConfirm(false);
+            setSeasonConfirmText("");
+          }}
+        >
+          Cancel
+        </button>
+
+        <button
+  type="button"
+  className="primary-brand-btn"
+  onClick={advanceSeason}
+  disabled={seasonConfirmText !== "ADVANCE"}
+>
+  Advance Season
+</button>
+      </div>
+    </div>
+  </div>
+)}
 
       <div className="action-row" style={{ marginBottom: "20px" }}>
   <button className="load-button primary-brand-btn" onClick={loadPendingPlayers}>
@@ -148,7 +297,69 @@ function AdminDashboard({
       <strong>{change.field}</strong>
     </p>
 
-    {change.field === "profilePicture" ? (
+    {change.field === "currentSeasonStats" ? (
+  <div className="season-stat-review">
+    <p style={{ marginBottom: "10px" }}>
+      <strong>Season:</strong>{" "}
+      {change.newValue?.season || "Unknown season"}
+    </p>
+
+    {Object.entries(change.newValue?.stats || {}).map(
+      ([statName, newValue]) => {
+        const existingSeason = p.seasonStats?.find(
+          (season) =>
+            season.season === change.newValue?.season
+        );
+
+        const oldValue = existingSeason?.[statName];
+
+        const formattedLabel = statName
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (letter) => letter.toUpperCase());
+
+        return (
+          <div
+            key={statName}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "16px",
+              padding: "8px 0",
+              borderBottom: "1px solid var(--brand-border)"
+            }}
+          >
+            <strong>{formattedLabel}</strong>
+
+            <span>
+              <span style={{ color: "var(--brand-muted)" }}>
+                {oldValue !== undefined &&
+                oldValue !== null &&
+                oldValue !== ""
+                  ? String(oldValue)
+                  : "Empty"}
+              </span>
+
+              {" → "}
+
+              <span
+                style={{
+                  color: "var(--brand-navy)",
+                  fontWeight: "700"
+                }}
+              >
+                {newValue !== undefined &&
+                newValue !== null &&
+                newValue !== ""
+                  ? String(newValue)
+                  : "Empty"}
+              </span>
+            </span>
+          </div>
+        );
+      }
+    )}
+  </div>
+) : change.field === "profilePicture" ? (
       <div
         style={{
           display: "flex",
