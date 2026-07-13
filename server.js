@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const User = require("./models/User");
@@ -21,8 +22,7 @@ app.use("/auth", authRoutes);
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-const uri =
-  "mongodb+srv://julian8gomez_db_user:Math123rules@chapinhuskyfootball.pabdrla.mongodb.net/football?retryWrites=true&w=majority&tls=true";
+const uri = process.env.MONGODB_URI;
 
 // Connect to MongoDB
 mongoose.connect(uri, {
@@ -97,9 +97,31 @@ const seasonStatFields = [
   "rushingTouchdowns",
 
   // Receiver / Tight End
-  "receptions",
-  "receivingYards",
-  "receivingTouchdowns",
+"receptions",
+"receivingYards",
+"receivingTouchdowns",
+
+// Special Teams Returns
+"kickoffReturns",
+"kickoffReturnYards",
+"puntReturns",
+"puntReturnYards",
+
+  // Kicker
+  "fieldGoalsMade",
+  "fieldGoalsAttempted",
+  "longestFieldGoal",
+  "extraPointsMade",
+  "extraPointsAttempted",
+  "kickoffs",
+  "touchbacks",
+
+  // Punter
+  "punts",
+  "puntYards",
+  "longestPunt",
+  "puntsInside20",
+  "fairCatchesForced",
 
   // Offensive Line
   "pancakeBlocks",
@@ -107,12 +129,18 @@ const seasonStatFields = [
   "gamesStarted",
 
   // Defense
+  "soloTackles",
+  "tackleAssists",
+
+  // Legacy total tackles field for older records
   "tackles",
+
   "tacklesForLoss",
   "sacks",
   "interceptions",
   "passBreakups",
   "forcedFumbles",
+  "fumbleRecoveries",
   "qbHurries",
 
   // General
@@ -145,6 +173,12 @@ app.put("/my-profile", authMiddleware, async (req, res) => {
   "ncaaId",
   "phoneNumber",
   "emailAddress",
+
+  // Recruiting & Exposure
+  "collegeOffers",
+  "campsAttended",
+  "collegesOfInterest",
+
   "gpa",
   "fortyTime",
   "vertical",
@@ -154,7 +188,14 @@ app.put("/my-profile", authMiddleware, async (req, res) => {
   "squatMax",
   "passingYards",
   "rushingYards",
+
+  // Defensive tackle breakdown
+  "soloTackles",
+  "tackleAssists",
+
+  // Legacy total tackles field for older records
   "tackles",
+
   "sacks",
   "interceptions",
   "touchdowns",
@@ -170,6 +211,28 @@ app.put("/my-profile", authMiddleware, async (req, res) => {
   "receivingYards",
   "receivingTouchdowns",
 
+  // Special Teams Returns
+  "kickoffReturns",
+  "kickoffReturnYards",
+  "puntReturns",
+  "puntReturnYards",
+
+  // Kicker
+  "fieldGoalsMade",
+  "fieldGoalsAttempted",
+  "longestFieldGoal",
+  "extraPointsMade",
+  "extraPointsAttempted",
+  "kickoffs",
+  "touchbacks",
+
+  // Punter
+  "punts",
+  "puntYards",
+  "longestPunt",
+  "puntsInside20",
+  "fairCatchesForced",
+
   "pancakeBlocks",
   "sacksAllowed",
   "gamesStarted",
@@ -177,6 +240,7 @@ app.put("/my-profile", authMiddleware, async (req, res) => {
   "tacklesForLoss",
   "passBreakups",
   "forcedFumbles",
+  "fumbleRecoveries",
   "qbHurries",
 ];
 

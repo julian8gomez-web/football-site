@@ -20,6 +20,111 @@ function AdminDashboard({
   const [currentSeason, setCurrentSeason] = useState(null);
 const [showSeasonConfirm, setShowSeasonConfirm] = useState(false);
 const [seasonConfirmText, setSeasonConfirmText] = useState("");
+const [expandedPlayers, setExpandedPlayers] = useState({});
+
+const togglePlayerChanges = (playerId) => {
+  setExpandedPlayers((current) => ({
+    ...current,
+    [playerId]: !current[playerId]
+  }));
+};
+
+const formatFieldLabel = (field) =>
+  field
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (letter) => letter.toUpperCase());
+
+const formatReviewValue = (value) => {
+  if (Array.isArray(value)) {
+    return value.length > 0 ? value.join(", ") : "Empty";
+  }
+
+  if (
+    value === undefined ||
+    value === null ||
+    value === ""
+  ) {
+    return "Empty";
+  }
+
+  return String(value);
+};
+
+const normalizeReviewValue = (value) => {
+  if (
+    value === undefined ||
+    value === null ||
+    value === ""
+  ) {
+    return "";
+  }
+
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => String(item).trim())
+      .filter(Boolean);
+  }
+
+  if (typeof value === "object") {
+    return value;
+  }
+
+  return String(value).trim();
+};
+
+const reviewValuesMatch = (oldValue, newValue) => {
+  return JSON.stringify(normalizeReviewValue(oldValue)) ===
+    JSON.stringify(normalizeReviewValue(newValue));
+};
+
+const getEffectiveChanges = (player) => {
+  if (!Array.isArray(player.changes)) {
+    return [];
+  }
+
+  return player.changes
+    .map((change) => {
+      if (change.field !== "currentSeasonStats") {
+        return reviewValuesMatch(
+          change.oldValue,
+          change.newValue
+        )
+          ? null
+          : change;
+      }
+
+      const seasonLabel = change.newValue?.season;
+      const existingSeason = player.seasonStats?.find(
+        (season) => season.season === seasonLabel
+      );
+
+      const changedStats = Object.entries(
+        change.newValue?.stats || {}
+      ).reduce((result, [statName, newValue]) => {
+        const oldValue = existingSeason?.[statName];
+
+        if (!reviewValuesMatch(oldValue, newValue)) {
+          result[statName] = newValue;
+        }
+
+        return result;
+      }, {});
+
+      if (Object.keys(changedStats).length === 0) {
+        return null;
+      }
+
+      return {
+        ...change,
+        newValue: {
+          ...change.newValue,
+          stats: changedStats
+        }
+      };
+    })
+    .filter(Boolean);
+};
+
 const nextSeasonStartYear = currentSeason
   ? currentSeason.startYear + 1
   : null;
@@ -261,223 +366,208 @@ const nextSeasonLabel = nextSeasonStartYear
       {pendingPlayers.length === 0 ? (
         <p>No pending players right now.</p>
       ) : (
-        pendingPlayers.map((p) => (
-          <div key={p._id} className="card">
-            <div className="admin-player-header">
-  <div>
-    <h3>{p.name}</h3>
-    <p className="admin-player-subtext">
-      {p.position1
-  ? p.position2
-    ? `${p.position1}/${p.position2}`
-    : p.position1
-  : p.position || "No position"}{" "}
-• Class {p.playerClass || "N/A"} • #{p.jerseyNumber || "N/A"}
-    </p>
-  </div>
+        pendingPlayers.map((p) => {
+          const isExpanded = Boolean(expandedPlayers[p._id]);
+          const effectiveChanges = getEffectiveChanges(p);
+          const changeCount = effectiveChanges.length;
 
-  <span className={`admin-status-badge status-${p.status || "unknown"}`}>
-    {p.status || "unknown"}
-  </span>
-</div>
+          return (
+            <div key={p._id} className="card admin-review-card">
+              <div className="admin-player-header">
+                <div>
+                  <h3>{p.name}</h3>
 
-            {p.changes && p.changes.length > 0 ? (
-              <div style={{ marginTop: "16px" }}>
-                <h4 style={{ marginBottom: "12px" }}>Requested Changes</h4>
+                  <p className="admin-player-subtext">
+                    {p.position1
+                      ? p.position2
+                        ? `${p.position1}/${p.position2}`
+                        : p.position1
+                      : p.position || "No position"}{" "}
+                    • Class {p.playerClass || "N/A"} • #
+                    {p.jerseyNumber || "N/A"}
+                  </p>
+                </div>
 
-                {p.changes.map((change, index) => (
-  <div
-    key={index}
-    style={{
-      padding: "12px 0",
-      borderBottom: "1px solid #e5e7eb"
-    }}
-  >
-    <p style={{ marginBottom: "8px" }}>
-      <strong>{change.field}</strong>
-    </p>
+                <div className="admin-review-summary">
+                  <span
+                    className={`admin-status-badge status-${p.status || "unknown"}`}
+                  >
+                    {p.status || "unknown"}
+                  </span>
 
-    {change.field === "currentSeasonStats" ? (
-  <div className="season-stat-review">
-    <p style={{ marginBottom: "10px" }}>
-      <strong>Season:</strong>{" "}
-      {change.newValue?.season || "Unknown season"}
-    </p>
-
-    {Object.entries(change.newValue?.stats || {}).map(
-      ([statName, newValue]) => {
-        const existingSeason = p.seasonStats?.find(
-          (season) =>
-            season.season === change.newValue?.season
-        );
-
-        const oldValue = existingSeason?.[statName];
-
-        const formattedLabel = statName
-          .replace(/([A-Z])/g, " $1")
-          .replace(/^./, (letter) => letter.toUpperCase());
-
-        return (
-          <div
-            key={statName}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              gap: "16px",
-              padding: "8px 0",
-              borderBottom: "1px solid var(--brand-border)"
-            }}
-          >
-            <strong>{formattedLabel}</strong>
-
-            <span>
-              <span style={{ color: "var(--brand-muted)" }}>
-                {oldValue !== undefined &&
-                oldValue !== null &&
-                oldValue !== ""
-                  ? String(oldValue)
-                  : "Empty"}
-              </span>
-
-              {" → "}
-
-              <span
-                style={{
-                  color: "var(--brand-navy)",
-                  fontWeight: "700"
-                }}
-              >
-                {newValue !== undefined &&
-                newValue !== null &&
-                newValue !== ""
-                  ? String(newValue)
-                  : "Empty"}
-              </span>
-            </span>
-          </div>
-        );
-      }
-    )}
-  </div>
-) : change.field === "profilePicture" ? (
-      <div
-        style={{
-          display: "flex",
-          gap: "20px",
-          flexWrap: "wrap",
-          alignItems: "flex-start"
-        }}
-      >
-        <div>
-          <p style={{ marginBottom: "8px", color: "#6b7280", fontWeight: "600" }}>
-            Current
-          </p>
-          {change.oldValue ? (
-            <img
-              src={change.oldValue}
-              alt="Current profile"
-              style={{
-                width: "120px",
-                height: "120px",
-                objectFit: "cover",
-                borderRadius: "16px",
-                border: "1px solid #d6e2f0"
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                width: "120px",
-                height: "120px",
-                borderRadius: "16px",
-                border: "1px solid #d6e2f0",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#6b7280",
-                background: "#f8fbff"
-              }}
-            >
-              Empty
-            </div>
-          )}
-        </div>
-
-        <div>
-          <p style={{ marginBottom: "8px", color: "#0b2545", fontWeight: "700" }}>
-            Requested
-          </p>
-          {change.newValue ? (
-            <img
-              src={change.newValue}
-              alt="Requested profile"
-              style={{
-                width: "120px",
-                height: "120px",
-                objectFit: "cover",
-                borderRadius: "16px",
-                border: "2px solid #6f9dcd"
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                width: "120px",
-                height: "120px",
-                borderRadius: "16px",
-                border: "2px solid #6f9dcd",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#0b2545",
-                background: "#eef5fc"
-              }}
-            >
-              Empty
-            </div>
-          )}
-        </div>
-      </div>
-    ) : (
-      <p style={{ margin: 0 }}>
-        <span style={{ color: "#6b7280" }}>
-          {change.oldValue !== undefined &&
-          change.oldValue !== null &&
-          change.oldValue !== ""
-            ? String(change.oldValue)
-            : "Empty"}
-        </span>
-        {" → "}
-        <span style={{ color: "#0b2545", fontWeight: "700" }}>
-          {change.newValue !== undefined &&
-          change.newValue !== null &&
-          change.newValue !== ""
-            ? String(change.newValue)
-            : "Empty"}
-        </span>
-      </p>
-    )}
-  </div>
-))}
+                  <span className="admin-change-count">
+                    {changeCount} change
+                    {changeCount === 1 ? "" : "s"}
+                  </span>
+                </div>
               </div>
-            ) : (
-              <p>No pending field changes found.</p>
-            )}
 
-            <div className="action-row">
-              <button className="primary-brand-btn" onClick={() => approvePlayer(p._id)}>
-                Approve
-              </button>
-              <button className="reject-brand-btn" onClick={() => rejectPlayer(p._id)}>
-                Reject
-              </button>
-              <button className="primary-brand-btn"
-              type="button" onClick={() => resetPlayerPassword(p._id)}>
-              Reset Password
-              </button>
+              <div className="admin-review-toolbar">
+                <button
+                  type="button"
+                  className="secondary-brand-btn"
+                  onClick={() => togglePlayerChanges(p._id)}
+                  aria-expanded={isExpanded}
+                >
+                  {isExpanded ? "Hide Changes" : "View Changes"}
+                </button>
+
+                <div className="action-row admin-review-actions">
+                  <button
+                    className="primary-brand-btn"
+                    onClick={() => approvePlayer(p._id)}
+                  >
+                    Approve
+                  </button>
+
+                  <button
+                    className="reject-brand-btn"
+                    onClick={() => rejectPlayer(p._id)}
+                  >
+                    Reject
+                  </button>
+
+                  <button
+                    className="primary-brand-btn"
+                    type="button"
+                    onClick={() => resetPlayerPassword(p._id)}
+                  >
+                    Reset Password
+                  </button>
+                </div>
+              </div>
+
+              {isExpanded && (
+                <div className="admin-change-panel">
+                  {effectiveChanges.length > 0 ? (
+                    <>
+                      <h4>Requested Changes</h4>
+
+                      {effectiveChanges.map((change, index) => (
+                        <div
+                          key={`${change.field}-${index}`}
+                          className="admin-change-item"
+                        >
+                          <p className="admin-change-label">
+                            <strong>
+                              {formatFieldLabel(change.field)}
+                            </strong>
+                          </p>
+
+                          {change.field === "currentSeasonStats" ? (
+                            <div className="season-stat-review">
+                              <p className="admin-change-season">
+                                <strong>Season:</strong>{" "}
+                                {change.newValue?.season ||
+                                  "Unknown season"}
+                              </p>
+
+                              {Object.entries(
+                                change.newValue?.stats || {}
+                              ).map(([statName, newValue]) => {
+                                const existingSeason =
+                                  p.seasonStats?.find(
+                                    (season) =>
+                                      season.season ===
+                                      change.newValue?.season
+                                  );
+
+                                const oldValue =
+                                  existingSeason?.[statName];
+
+                                return (
+                                  <div
+                                    key={statName}
+                                    className="admin-stat-change-row"
+                                  >
+                                    <strong>
+                                      {formatFieldLabel(statName)}
+                                    </strong>
+
+                                    <span>
+                                      <span className="admin-old-value">
+                                        {formatReviewValue(oldValue)}
+                                      </span>
+
+                                      <span className="admin-change-arrow">
+                                        →
+                                      </span>
+
+                                      <span className="admin-new-value">
+                                        {formatReviewValue(newValue)}
+                                      </span>
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : change.field === "profilePicture" ? (
+                            <div className="admin-picture-comparison">
+                              <div>
+                                <p className="admin-old-heading">
+                                  Current
+                                </p>
+
+                                {change.oldValue ? (
+                                  <img
+                                    src={change.oldValue}
+                                    alt="Current profile"
+                                    className="admin-review-image"
+                                  />
+                                ) : (
+                                  <div className="admin-empty-image">
+                                    Empty
+                                  </div>
+                                )}
+                              </div>
+
+                              <div>
+                                <p className="admin-new-heading">
+                                  Requested
+                                </p>
+
+                                {change.newValue ? (
+                                  <img
+                                    src={change.newValue}
+                                    alt="Requested profile"
+                                    className="admin-review-image requested"
+                                  />
+                                ) : (
+                                  <div className="admin-empty-image requested">
+                                    Empty
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="admin-simple-change">
+                              <span className="admin-old-value">
+                                {formatReviewValue(change.oldValue)}
+                              </span>
+
+                              <span className="admin-change-arrow">
+                                →
+                              </span>
+
+                              <span className="admin-new-value">
+                                {formatReviewValue(change.newValue)}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <p>
+                      No actual value changes were found. The submitted
+                      values match the current approved profile.
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
-          </div>
-        ))
+          );
+        })
       )}
     </div>
   );

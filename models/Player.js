@@ -3,122 +3,194 @@ const mongoose = require("mongoose");
 const playerSchema = new mongoose.Schema({
   name: { type: String, required: true },
   slug: {
-  type: String,
-  unique: true,
-  sparse: true
-},
+    type: String,
+    unique: true,
+    sparse: true
+  },
 
-  // basic public profile info
-position: String,
-position1: String,
-position2: String,
-playerClass: String,
-height: String,
-weight: String,
-jerseyNumber: String,
-location: String,
-hudlLink: String,
-contactInfo: String,
-profilePicture: String,
-twitter: String,
-ncaaId: String,
-phoneNumber: String,
-emailAddress: String,
+  // Basic public profile info
+  position: String,
+  position1: String,
+  position2: String,
+  playerClass: String,
+  height: String,
+  weight: String,
+  jerseyNumber: String,
+  location: String,
+  hudlLink: String,
+  contactInfo: String,
+  profilePicture: String,
+  twitter: String,
+  ncaaId: String,
+  phoneNumber: String,
+  emailAddress: String,
 
-// academics / athletic testing
-gpa: String,
-fortyTime: String,
-vertical: String,
-broadJump: String,
-benchMax: Number,
-cleanMax: Number,
-squatMax: Number,
+  // Recruiting & exposure
+  collegeOffers: {
+    type: [String],
+    default: []
+  },
+  campsAttended: {
+    type: [String],
+    default: []
+  },
+  collegesOfInterest: {
+    type: [String],
+    default: []
+  },
 
-// football production stats
-passingYards: Number,
-rushingYards: Number,
-tackles: Number,
-sacks: Number,
-interceptions: Number,
-touchdowns: Number,
+  // Academics / athletic testing
+  gpa: String,
+  fortyTime: String,
+  vertical: String,
+  broadJump: String,
+  benchMax: Number,
+  cleanMax: Number,
+  squatMax: Number,
 
-// QB Stats
-passingCompletions: Number,
-passingAttempts: Number,
-passingTouchdowns: Number,
-interceptionsThrown: Number,
+  // Football production stats
+  passingYards: Number,
+  rushingYards: Number,
 
-// RB Stats
-carries: Number,
-rushingTouchdowns: Number,
+  // Legacy total tackles field for older records
+  tackles: Number,
 
-// WR / TE Stats
-receptions: Number,
-receivingYards: Number,
-receivingTouchdowns: Number,
+  sacks: Number,
+  interceptions: Number,
+  touchdowns: Number,
 
-// OL Stats
-pancakeBlocks: Number,
-sacksAllowed: Number,
-gamesStarted: Number,
+  // QB Stats
+  passingCompletions: Number,
+  passingAttempts: Number,
+  passingTouchdowns: Number,
+  interceptionsThrown: Number,
 
-// Defensive Stats
-tacklesForLoss: Number,
-passBreakups: Number,
-forcedFumbles: Number,
-qbHurries: Number,
-seasonStats: [
-  {
-    season: {
-  type: String,
-  required: true
-},
+  // RB Stats
+  carries: Number,
+  rushingTouchdowns: Number,
 
-    isCurrent: {
-      type: Boolean,
-      default: false
-    },
+  // WR / TE Stats
+  receptions: Number,
+  receivingYards: Number,
+  receivingTouchdowns: Number,
 
-    isLocked: {
-      type: Boolean,
-      default: false
-    },
+  // OL Stats
+  pancakeBlocks: Number,
+  sacksAllowed: Number,
+  gamesStarted: Number,
 
-    // QB Stats
-    passingCompletions: Number,
-    passingAttempts: Number,
-    passingYards: Number,
-    passingTouchdowns: Number,
-    interceptionsThrown: Number,
+  // Defensive Stats
+  soloTackles: Number,
+  tackleAssists: Number,
+  tacklesForLoss: Number,
+  passBreakups: Number,
+  forcedFumbles: Number,
+  fumbleRecoveries: Number,
+  qbHurries: Number,
 
-    // RB Stats
-    carries: Number,
-    rushingYards: Number,
-    rushingTouchdowns: Number,
+  // Special Teams Return Stats
+  kickoffReturns: Number,
+  kickoffReturnYards: Number,
+  puntReturns: Number,
+  puntReturnYards: Number,
 
-    // WR / TE Stats
-    receptions: Number,
-    receivingYards: Number,
-    receivingTouchdowns: Number,
+  // Kicker Stats
+  fieldGoalsMade: Number,
+  fieldGoalsAttempted: Number,
+  longestFieldGoal: Number,
+  extraPointsMade: Number,
+  extraPointsAttempted: Number,
+  kickoffs: Number,
+  touchbacks: Number,
 
-    // OL Stats
-    pancakeBlocks: Number,
-    sacksAllowed: Number,
-    gamesStarted: Number,
+  // Punter Stats
+  punts: Number,
+  puntYards: Number,
+  longestPunt: Number,
+  puntsInside20: Number,
+  fairCatchesForced: Number,
 
-    // Defense
-    tackles: Number,
-    tacklesForLoss: Number,
-    sacks: Number,
-    interceptions: Number,
-    passBreakups: Number,
-    forcedFumbles: Number,
-    qbHurries: Number,
+  seasonStats: [
+    {
+      season: {
+        type: String,
+        required: true
+      },
 
-    // General / all-purpose
-    touchdowns: Number
-  }
-],
+      isCurrent: {
+        type: Boolean,
+        default: false
+      },
+
+      isLocked: {
+        type: Boolean,
+        default: false
+      },
+
+      // QB Stats
+      passingCompletions: Number,
+      passingAttempts: Number,
+      passingYards: Number,
+      passingTouchdowns: Number,
+      interceptionsThrown: Number,
+
+      // RB Stats
+      carries: Number,
+      rushingYards: Number,
+      rushingTouchdowns: Number,
+
+      // WR / TE Stats
+      receptions: Number,
+      receivingYards: Number,
+      receivingTouchdowns: Number,
+
+      // Special Teams Return Stats
+      kickoffReturns: Number,
+      kickoffReturnYards: Number,
+      puntReturns: Number,
+      puntReturnYards: Number,
+
+      // Kicker Stats
+      fieldGoalsMade: Number,
+      fieldGoalsAttempted: Number,
+      longestFieldGoal: Number,
+      extraPointsMade: Number,
+      extraPointsAttempted: Number,
+      kickoffs: Number,
+      touchbacks: Number,
+
+      // Punter Stats
+      punts: Number,
+      puntYards: Number,
+      longestPunt: Number,
+      puntsInside20: Number,
+      fairCatchesForced: Number,
+
+      // OL Stats
+      pancakeBlocks: Number,
+      sacksAllowed: Number,
+      gamesStarted: Number,
+
+      // Defense
+      soloTackles: Number,
+      tackleAssists: Number,
+
+      // Legacy total tackles fallback for older season records
+      tackles: Number,
+
+      tacklesForLoss: Number,
+      sacks: Number,
+      interceptions: Number,
+      passBreakups: Number,
+      forcedFumbles: Number,
+      fumbleRecoveries: Number,
+      qbHurries: Number,
+
+      // General / all-purpose
+      touchdowns: Number
+    }
+  ],
+
   pendingUpdates: {
     type: Object,
     default: {}

@@ -87,13 +87,13 @@ input, select {
 .navbar {
   display: flex;
   gap: 10px;
-  margin-bottom: 24px;
+  margin-bottom: 2px;
   flex-wrap: wrap;
   justify-content: center;
   background: rgba(11, 37, 69, 0.92);
   border: 1px solid rgba(111, 157, 205, 0.2);
   border-radius: 18px;
-  padding: 14px;
+  padding: 10px;
   box-shadow: 0 8px 22px rgba(11, 37, 69, 0.14);
 }
 
@@ -1890,4 +1890,974 @@ input, select {
 
 }
 
+}
+
+
+/* ==================================
+   RECRUITING & EXPOSURE POLISH
+================================== */
+
+.recruiting-detail-card {
+  padding: 24px 28px 28px;
+}
+
+.recruiting-contact-section,
+.recruiting-activity-section {
+  margin-top: 22px;
+}
+
+.recruiting-activity-section{
+    position: relative;
+
+    margin-top: 42px;
+
+    margin-left: -28px;
+    margin-right: -28px;
+    margin-bottom: -28px;
+
+    padding: 36px 28px 30px;
+
+    background: linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #f8fbff 15%,
+        #eef5fc 45%,
+        #e5eff9 100%
+    );
+
+    border-top:1px solid rgba(11,45,92,.08);
+
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 18px;
+}
+.recruiting-activity-section::after{
+    content:"";
+
+    position:absolute;
+
+    left:0;
+    right:0;
+    bottom:0;
+
+    height:120px;
+
+    background:linear-gradient(
+        to bottom,
+        rgba(229,239,249,0),
+        rgba(229,239,249,.55)
+    );
+
+    pointer-events:none;
+
+    z-index:0;
+}
+
+.recruiting-activity-grid,
+.recruiting-section-heading{
+    position:relative;
+    z-index:1;
+}
+.recruiting-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.recruiting-section-heading h4 {
+  margin: 2px 0 0;
+  color: #0b2d5c;
+  font-size: 1.08rem;
+  font-weight: 900;
+}
+
+.recruiting-section-kicker {
+  margin: 0;
+  color: #5d8fc6;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.recruiting-contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid #e4ebf2;
+  border-left: 1px solid #e4ebf2;
+}
+
+.recruiting-contact-item {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 15px;
+  border-right: 1px solid #e4ebf2;
+  border-bottom: 1px solid #e4ebf2;
+  background: #ffffff;
+  text-decoration: none;
+}
+
+.recruiting-contact-item span {
+  color: #5f7185;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.recruiting-contact-item strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: #0b2d5c;
+  font-size: 0.94rem;
+  font-weight: 900;
+  text-align: right;
+}
+
+.recruiting-contact-link {
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.recruiting-contact-link:hover {
+  background: #eef6fd;
+}
+
+.recruiting-activity-grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+
+    margin-top:20px;
+
+    overflow:hidden;
+
+    background:white;
+
+    border:1px solid #d7e5f3;
+    border-radius:18px;
+
+    box-shadow:
+        0 8px 24px rgba(8,45,92,.05);
+}
+
+.recruiting-list-section {
+  min-width: 0;
+  min-height: 160px;
+  padding: 16px 18px 18px;
+  border-right: 1px solid #dce7f1;
+}
+
+.recruiting-list-section:last-child {
+  border-right: none;
+}
+
+.recruiting-list-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #e7eef5;
+}
+
+.recruiting-list-heading h4 {
+  margin: 0;
+  color: #0b2d5c;
+  font-size: 0.98rem;
+  font-weight: 900;
+}
+
+.recruiting-list-heading span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #eaf3fb;
+  color: #174a78;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.recruiting-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recruiting-list li {
+  position: relative;
+  margin: 0;
+  padding: 7px 0 7px 20px;
+  color: #0b2d5c;
+  font-size: 0.96rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.recruiting-list li::before {
+  position: absolute;
+  left: 0;
+  top: 7px;
+  font-weight: 950;
+}
+
+.recruiting-offers .recruiting-list li::before {
+  content: "★";
+  color: #d9a600;
+}
+
+.recruiting-camps .recruiting-list li::before {
+  content: "•";
+  color: #5b9bd5;
+  font-size: 1.3rem;
+  line-height: 0.8;
+}
+
+.recruiting-interest .recruiting-list li::before {
+  content: "◆";
+  color: #174a78;
+  font-size: 0.72rem;
+  top: 10px;
+}
+
+.recruiting-list-empty {
+  margin: 0;
+  color: #75869a;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+@media (max-width: 800px) {
+  .recruiting-contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .recruiting-activity-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .recruiting-list-section {
+    min-height: auto;
+    border-right: none;
+    border-bottom: 1px solid #dce7f1;
+  }
+
+  .recruiting-list-section:last-child {
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .recruiting-detail-card {
+    padding: 20px 18px 22px;
+  }
+
+  .recruiting-contact-item {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .recruiting-contact-item strong {
+    text-align: left;
+  }
+
+  .recruiting-list-section {
+    padding: 14px 15px 16px;
+  }
+}
+
+
+/* ==================================
+   FINAL RECRUITING TAB REFINEMENTS
+================================== */
+
+.recruiting-section-heading {
+  margin-bottom: 14px;
+}
+
+.recruiting-section-heading h4 {
+  margin: 0;
+  font-size: 1.08rem;
+}
+
+.recruiting-contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  border: none;
+}
+
+.recruiting-action-tile {
+  min-width: 0;
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  padding: 14px 16px;
+  background: #f8fbfe;
+  border: 1px solid #dce7f1;
+  border-radius: 10px;
+  color: #0b2d5c;
+  text-decoration: none;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.recruiting-action-tile:hover {
+  transform: translateY(-2px);
+  background: #eef6fd;
+  border-color: #8fb9de;
+  box-shadow: 0 7px 16px rgba(11, 45, 92, 0.09);
+}
+
+.recruiting-action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  font-size: 1.12rem;
+  line-height: 1;
+}
+
+.recruiting-x-icon {
+  font-size: 1.22rem;
+  font-weight: 900;
+}
+
+.recruiting-action-tile strong {
+  min-width: 0;
+  color: #0b2d5c;
+  font-size: 0.96rem;
+  font-weight: 900;
+}
+
+.recruiting-action-arrow {
+  color: #316f9f;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.recruiting-action-detail {
+  min-width: 0;
+  max-width: 230px;
+  overflow-wrap: anywhere;
+  color: #5f7185;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.recruiting-list-heading {
+  margin: -16px -18px 10px;
+  padding: 13px 18px 11px;
+  border-bottom: 1px solid #dce7f1;
+}
+
+.recruiting-offers .recruiting-list-heading {
+  background: #fff9e5;
+}
+
+.recruiting-interest .recruiting-list-heading {
+  background: #edf3f9;
+}
+
+.recruiting-camps .recruiting-list-heading {
+  background: #edf7fd;
+}
+
+.recruiting-offers .recruiting-list-heading span {
+  background: #ffe9a6;
+  color: #8a6200;
+}
+
+.recruiting-interest .recruiting-list-heading span {
+  background: #dce9f5;
+  color: #0b2d5c;
+}
+
+.recruiting-camps .recruiting-list-heading span {
+  background: #dceffc;
+  color: #27689f;
+}
+
+.recruiting-offers .recruiting-list li::before {
+  font-size: 1.18rem;
+  top: 5px;
+}
+
+@media (max-width: 800px) {
+  .recruiting-contact-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .recruiting-action-tile {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .recruiting-action-arrow,
+  .recruiting-action-detail {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .recruiting-action-arrow {
+    display: none;
+  }
+}
+/* ==================================
+   RECRUITING ACTIVITY FULL-WIDTH FADE
+================================== */
+
+.recruiting-activity-section {
+  position: relative;
+
+  margin-top: 34px;
+  margin-left: -28px;
+  margin-right: -28px;
+  margin-bottom: -28px;
+
+  padding: 42px 28px 34px;
+
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #f8fbff 18%,
+    #eef6fd 52%,
+    #e3eef9 100%
+  );
+
+  border-top: 1px solid rgba(11, 45, 92, 0.1);
+  border-radius: 0 0 20px 20px;
+}
+
+/* Soft transition from the contact section into the blue area */
+.recruiting-activity-section::before {
+  content: "";
+  position: absolute;
+
+  top: -42px;
+  left: 0;
+  right: 0;
+
+  height: 76px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(248, 251, 255, 0.7) 55%,
+    rgba(248, 251, 255, 1) 100%
+  );
+
+  pointer-events: none;
+}
+
+/* Keep the heading and activity table above the fade */
+.recruiting-activity-section .recruiting-section-heading,
+.recruiting-activity-section .recruiting-activity-grid {
+  position: relative;
+  z-index: 1;
+}
+
+.recruiting-activity-grid {
+  margin-top: 20px;
+
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+
+  overflow: hidden;
+
+  background: #ffffff;
+  border: 1px solid #d5e3f0;
+  border-radius: 16px;
+
+  box-shadow: 0 10px 28px rgba(8, 45, 92, 0.06);
+}
+
+/* Keep the activity title visually separated */
+.recruiting-activity-section .recruiting-section-heading h4 {
+  margin: 0;
+  color: #0b2d5c;
+  font-size: 1.12rem;
+  font-weight: 900;
+}
+
+/* Mobile: preserve the full-width faded lower section */
+@media (max-width: 800px) {
+  .recruiting-activity-section {
+    margin-left: -18px;
+    margin-right: -18px;
+    margin-bottom: -22px;
+
+    padding: 34px 18px 24px;
+  }
+
+  .recruiting-activity-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* ==================================
+   CALCULATED FOOTBALL STAT SECTIONS
+   Add this to the bottom of index.css
+================================== */
+
+.calculated-stat-section {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #d9e5f0;
+}
+
+.calculated-stat-heading {
+  margin-bottom: 4px;
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.efficiency-heading {
+  color: #4f8fc9;
+}
+
+.totals-heading {
+  color: #a87900;
+}
+
+.total-stat-section {
+  margin-bottom: 18px;
+}
+
+.calculated-stat-section .detail-stat-row {
+  background: rgba(91, 155, 213, 0.035);
+}
+
+.total-stat-section .detail-stat-row {
+  background: rgba(245, 184, 0, 0.055);
+}
+/* ==================================
+   GROUPED PRODUCTION + EFFICIENCY
+   Add this to the bottom of index.css
+================================== */
+
+.production-stat-group {
+  margin: 0 14px 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #d9e5f0;
+}
+
+.production-stat-group:last-child {
+  border-bottom: none;
+}
+
+.production-stat-group .detail-subsection-title {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.production-stat-group .detail-stat-row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.production-stat-group .calculated-stat-section {
+  margin-top: 10px;
+  padding: 9px 12px 2px;
+  border-top: 1px dashed #b9cee1;
+  background: rgba(91, 155, 213, 0.055);
+  border-radius: 8px;
+}
+
+.production-stat-group .calculated-stat-heading {
+  margin-bottom: 2px;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+}
+
+.production-stat-group .calculated-stat-section .detail-stat-row {
+  background: transparent;
+}
+
+.production-stat-group .total-stat-section {
+  background: rgba(245, 184, 0, 0.065);
+  border-top-color: rgba(168, 121, 0, 0.35);
+}
+
+.season-production-section .production-stat-group {
+  margin-left: 14px;
+  margin-right: 14px;
+}
+
+.season-production-section .production-stat-group .detail-stat-row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+@media (max-width: 600px) {
+  .production-stat-group {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .production-stat-group .calculated-stat-section {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+/* ==================================
+   PLAYER DASHBOARD PERSISTENT STAT LABELS
+   Add this to the bottom of index.css
+================================== */
+
+.stat-input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat-input-field > span {
+  color: #0b2d5c;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.stat-input-field input {
+  width: 100%;
+}
+
+.stat-group .stat-input-field + .stat-input-field {
+  margin-top: 10px;
+}
+/* ==================================
+   NAVBAR LEFT / RIGHT LAYOUT
+   Add this to the bottom of index.css
+================================== */
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.navbar-left,
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-account-name {
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+@media (max-width: 600px) {
+  .navbar {
+    align-items: stretch;
+  }
+
+  .navbar-left,
+  .navbar-right {
+    flex-wrap: wrap;
+  }
+
+  .navbar-account-name {
+    display: none;
+  }
+}
+/* ==================================
+   NAVBAR RECRUITING PROFILES CENTER
+   Add this to the bottom of index.css
+================================== */
+
+.navbar {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+}
+
+.navbar-left {
+  justify-self: start;
+}
+
+.navbar-right {
+  justify-self: end;
+}
+
+.navbar-recruiting-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: #ffffff;
+  text-align: center;
+  text-decoration: none;
+  line-height: 1.1;
+}
+
+.navbar-recruiting-title strong {
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+.navbar-recruiting-title span {
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.roster-filter-card {
+  margin-top: 20px;
+}
+
+@media (max-width: 760px) {
+  .navbar {
+    grid-template-columns: 1fr auto;
+  }
+
+  .navbar-recruiting-title {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    padding-top: 2px;
+  }
+
+  .navbar-left {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .navbar-right {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .navbar-recruiting-title strong {
+    font-size: 0.95rem;
+  }
+
+  .navbar-recruiting-title span {
+    font-size: 0.68rem;
+  }
+}
+/* ==================================
+   VERIFIED NAVBAR + FILTER BADGE POLISH
+   Add this to the bottom of index.css
+================================== */
+
+.navbar-recruiting-title strong {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.navbar-recruiting-title span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  opacity: 0.85;
+}
+/* Persistent labels for Personal, Athletic Testing, and Academics */
+.profile-input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-input-field > span {
+  color: #0b2d5c;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.profile-input-field input,
+.profile-input-field select {
+  width: 100%;
+}
+/* Persistent labels for Personal, Athletic Testing, and Academics */
+.profile-input-field { display:flex; flex-direction:column; gap:6px; }
+.profile-input-field > span { color:#0b2d5c; font-size:.82rem; font-weight:800; letter-spacing:.01em; }
+.profile-input-field input, .profile-input-field select { width:100%; }
+/* ==================================
+   COMPACT ADMIN APPROVAL CARDS
+   Add this to the bottom of index.css
+================================== */
+
+.admin-review-card {
+  padding: 18px;
+}
+
+.admin-review-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-change-count {
+  color: var(--brand-muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.admin-review-toolbar {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.admin-review-actions {
+  margin: 0;
+}
+
+.admin-change-panel {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--brand-border);
+}
+
+.admin-change-panel h4 {
+  margin: 0 0 12px;
+  color: var(--brand-navy);
+}
+
+.admin-change-item {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.admin-change-item:last-child {
+  border-bottom: none;
+}
+
+.admin-change-label {
+  margin: 0 0 8px;
+  color: var(--brand-navy);
+}
+
+.admin-simple-change,
+.admin-stat-change-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-stat-change-row {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.admin-stat-change-row:last-child {
+  border-bottom: none;
+}
+
+.admin-old-value {
+  color: var(--brand-muted);
+}
+
+.admin-new-value {
+  color: var(--brand-navy);
+  font-weight: 800;
+}
+
+.admin-change-arrow {
+  margin: 0 8px;
+  color: var(--brand-muted);
+  font-weight: 800;
+}
+
+.admin-change-season {
+  margin-bottom: 10px;
+}
+
+.admin-picture-comparison {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.admin-old-heading,
+.admin-new-heading {
+  margin: 0 0 8px;
+  font-weight: 800;
+}
+
+.admin-old-heading {
+  color: var(--brand-muted);
+}
+
+.admin-new-heading {
+  color: var(--brand-navy);
+}
+
+.admin-review-image,
+.admin-empty-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 1px solid #d6e2f0;
+}
+
+.admin-review-image.requested,
+.admin-empty-image.requested {
+  border: 2px solid #6f9dcd;
+}
+
+.admin-empty-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-muted);
+  background: #f8fbff;
+}
+
+.admin-empty-image.requested {
+  color: var(--brand-navy);
+  background: #eef5fc;
+}
+
+@media (max-width: 700px) {
+  .admin-review-toolbar,
+  .admin-simple-change,
+  .admin-stat-change-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-review-actions {
+    width: 100%;
+  }
+
+  .admin-review-actions button {
+    flex: 1;
+  }
+
+  .admin-change-arrow {
+    margin: 4px 0;
+  }
 }

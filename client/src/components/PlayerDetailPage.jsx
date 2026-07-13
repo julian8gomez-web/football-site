@@ -13,15 +13,34 @@ const SEASON_STAT_FIELDS = [
   "receptions",
   "receivingYards",
   "receivingTouchdowns",
+  "kickoffReturns",
+  "kickoffReturnYards",
+  "puntReturns",
+  "puntReturnYards",
+  "fieldGoalsMade",
+  "fieldGoalsAttempted",
+  "longestFieldGoal",
+  "extraPointsMade",
+  "extraPointsAttempted",
+  "kickoffs",
+  "touchbacks",
+  "punts",
+  "puntYards",
+  "longestPunt",
+  "puntsInside20",
+  "fairCatchesForced",
   "pancakeBlocks",
   "sacksAllowed",
   "gamesStarted",
+  "soloTackles",
+  "tackleAssists",
   "tackles",
   "tacklesForLoss",
   "sacks",
   "interceptions",
   "passBreakups",
   "forcedFumbles",
+  "fumbleRecoveries",
   "qbHurries",
   "touchdowns"
 ];
@@ -85,10 +104,54 @@ function PlayerDetailPage({ approvedPlayers, useSlug = false }) {
   const showStat = (label, value) => {
     if (value === undefined || value === null || value === "") return null;
 
+    const shouldFormatWithCommas =
+      label.toLowerCase().includes("yard");
+
+    let displayValue = value;
+
+    if (shouldFormatWithCommas) {
+      const numericValue = Number(value);
+
+      if (Number.isFinite(numericValue)) {
+        displayValue = numericValue.toLocaleString("en-US");
+      }
+    }
+
     return (
       <div className="detail-stat-row">
         <span className="detail-stat-label">{label}</span>
-        <span className="detail-stat-value">{value}</span>
+        <span className="detail-stat-value">{displayValue}</span>
+      </div>
+    );
+  };
+
+  const renderRecruitingList = (title, items, type) => {
+    const cleanItems = Array.isArray(items)
+      ? items
+          .map((item) => String(item).trim())
+          .filter(Boolean)
+      : [];
+
+    return (
+      <div className={`recruiting-list-section recruiting-${type}`}>
+        <div className="recruiting-list-heading">
+          <h4>{title}</h4>
+          <span>
+            {cleanItems.length}
+          </span>
+        </div>
+
+        {cleanItems.length > 0 ? (
+          <ul className="recruiting-list">
+            {cleanItems.map((item, index) => (
+              <li key={`${title}-${index}`}>{item}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className="recruiting-list-empty">
+            None reported.
+          </p>
+        )}
       </div>
     );
   };
@@ -130,23 +193,51 @@ function PlayerDetailPage({ approvedPlayers, useSlug = false }) {
 
   const careerHasAny = (fields) => fields.some(careerHasField);
 
-  const showQB = positions.includes("QB");
+  const showQB =
+    positions.includes("QB") ||
+    positions.includes("ATH");
   const showRB = positions.includes("RB") || positions.includes("ATH");
   const showWR =
-    positions.includes("WR") ||
-    positions.includes("TE") ||
-    positions.includes("ATH");
+  positions.includes("WR") ||
+  positions.includes("TE") ||
+  positions.includes("RB") ||
+  positions.includes("ATH");
   const showOL =
     positions.includes("OL") ||
     positions.includes("T") ||
     positions.includes("G") ||
     positions.includes("C");
 
+  const showKicker = positions.includes("K");
+  const showPunter = positions.includes("P");
+
   const showDefense =
     positions.includes("ATH") ||
     positions.some((p) =>
       ["DB", "CB", "S", "OLB", "MLB", "LB", "DE", "DL"].includes(p)
     );
+
+  // Match the player dashboard: hide return statistics when every
+  // listed position is QB, a lineman, K, or P.
+  const returnHiddenPositions = [
+    "QB",
+    "OL",
+    "T",
+    "G",
+    "C",
+    "DE",
+    "DL",
+    "DT",
+    "K",
+    "P"
+  ];
+
+  const showSpecialTeamsReturns =
+    positions.length > 0 &&
+    positions.some(
+      (position) => !returnHiddenPositions.includes(position)
+    );
+
 const STAT_GROUPS = [
   {
     title: "Passing",
@@ -181,6 +272,43 @@ const STAT_GROUPS = [
   },
 
   {
+    title: "Kicking",
+    show: () => showKicker,
+    fields: [
+      ["Field Goals Made", "fieldGoalsMade"],
+      ["Field Goals Attempted", "fieldGoalsAttempted"],
+      ["Longest Field Goal", "longestFieldGoal"],
+      ["Extra Points Made", "extraPointsMade"],
+      ["Extra Points Attempted", "extraPointsAttempted"],
+      ["Kickoffs", "kickoffs"],
+      ["Touchbacks", "touchbacks"]
+    ]
+  },
+
+  {
+    title: "Punting",
+    show: () => showPunter,
+    fields: [
+      ["Punts", "punts"],
+      ["Punt Yards", "puntYards"],
+      ["Longest Punt", "longestPunt"],
+      ["Punts Inside 20", "puntsInside20"],
+      ["Fair Catches Forced", "fairCatchesForced"]
+    ]
+  },
+
+  {
+    title: "Special Teams Returns",
+    show: () => showSpecialTeamsReturns,
+    fields: [
+      ["Kickoff Returns", "kickoffReturns"],
+      ["Kickoff Return Yards", "kickoffReturnYards"],
+      ["Punt Returns", "puntReturns"],
+      ["Punt Return Yards", "puntReturnYards"]
+    ]
+  },
+
+  {
     title: "Offensive Line",
     show: () => showOL,
     fields: [
@@ -194,12 +322,14 @@ const STAT_GROUPS = [
     title: "Defense",
     show: () => showDefense,
     fields: [
-      ["Tackles", "tackles"],
+      ["Solo Tackles", "soloTackles"],
+      ["Tackle Assists", "tackleAssists"],
       ["Tackles For Loss", "tacklesForLoss"],
       ["Sacks", "sacks"],
       ["Interceptions", "interceptions"],
       ["Pass Breakups", "passBreakups"],
       ["Forced Fumbles", "forcedFumbles"],
+      ["Fumble Recoveries", "fumbleRecoveries"],
       ["QB Hurries", "qbHurries"]
     ]
   }
@@ -212,6 +342,48 @@ const STAT_GROUPS = [
       </p>
     );
   }
+
+  const calculateAverage = (yards, attempts) => {
+    const totalYards = Number(yards);
+    const totalAttempts = Number(attempts);
+
+    if (
+      !Number.isFinite(totalYards) ||
+      !Number.isFinite(totalAttempts) ||
+      totalAttempts <= 0
+    ) {
+      return null;
+    }
+
+    return (totalYards / totalAttempts).toFixed(1);
+  };
+
+  const calculatePassingEfficiency = () => {
+    const attempts = Number(stats.passingAttempts || 0);
+    const completions = Number(stats.passingCompletions || 0);
+    const passingYards = Number(stats.passingYards || 0);
+    const passingTouchdowns = Number(stats.passingTouchdowns || 0);
+    const interceptionsThrown = Number(stats.interceptionsThrown || 0);
+
+    return {
+      completionPercentage:
+        attempts > 0
+          ? `${((completions / attempts) * 100).toFixed(1)}%`
+          : null,
+
+      yardsPerAttempt:
+        attempts > 0
+          ? (passingYards / attempts).toFixed(1)
+          : null,
+
+      touchdownInterceptionRatio:
+        interceptionsThrown > 0
+          ? (passingTouchdowns / interceptionsThrown).toFixed(1)
+          : passingTouchdowns > 0
+            ? `${passingTouchdowns}:0`
+            : null
+    };
+  };
 
   const fieldHasData = (field) => {
     if (useCareerTotals) {
@@ -241,12 +413,79 @@ const STAT_GROUPS = [
   }
 
   const offensiveGroups = visibleGroups.filter(
-    (group) => group.title !== "Defense"
+    (group) =>
+      group.title !== "Defense" &&
+      group.title !== "Special Teams Returns" &&
+      group.title !== "Kicking" &&
+      group.title !== "Punting"
+  );
+
+  const kickingGroup = visibleGroups.find(
+    (group) => group.title === "Kicking"
+  );
+
+  const puntingGroup = visibleGroups.find(
+    (group) => group.title === "Punting"
+  );
+
+  const specialTeamsGroup = visibleGroups.find(
+    (group) => group.title === "Special Teams Returns"
   );
 
   const defensiveGroup = visibleGroups.find(
     (group) => group.title === "Defense"
   );
+
+  const touchdownFields = [
+    "passingTouchdowns",
+    "rushingTouchdowns",
+    "receivingTouchdowns"
+  ];
+
+  const hasTouchdownData = useCareerTotals
+    ? touchdownFields.some((field) => careerHasField(field))
+    : touchdownFields.some((field) => hasValue(stats[field]));
+
+  const totalTouchdowns =
+    Number(stats.passingTouchdowns || 0) +
+    Number(stats.rushingTouchdowns || 0) +
+    Number(stats.receivingTouchdowns || 0);
+
+  const hasAthTotalYardsData =
+    positions.includes("ATH") &&
+    (
+      (useCareerTotals &&
+        (
+          careerHasField("rushingYards") ||
+          careerHasField("receivingYards")
+        )) ||
+      (!useCareerTotals &&
+        (
+          hasValue(stats.rushingYards) ||
+          hasValue(stats.receivingYards)
+        ))
+    );
+
+  const athTotalYards =
+    Number(stats.rushingYards || 0) +
+    Number(stats.receivingYards || 0);
+
+  const hasTackleBreakdown = useCareerTotals
+    ? careerHasField("soloTackles") ||
+      careerHasField("tackleAssists")
+    : hasValue(stats.soloTackles) ||
+      hasValue(stats.tackleAssists);
+
+  const hasLegacyTackles = useCareerTotals
+    ? careerHasField("tackles")
+    : hasValue(stats.tackles);
+
+  const totalTackles = hasTackleBreakdown
+    ? Number(stats.soloTackles || 0) +
+      Number(stats.tackleAssists || 0)
+    : hasLegacyTackles
+      ? Number(stats.tackles || 0)
+      : null;
 
   return (
     <>
@@ -256,38 +495,426 @@ const STAT_GROUPS = [
         </div>
       )}
 
-      {offensiveGroups.map((group) => (
-        <div
-          key={group.title}
-          style={{ marginBottom: "20px" }}
-        >
-          <h4 className="detail-subsection-title">
-            {group.title}
-          </h4>
+      {offensiveGroups.map((group, groupIndex) => {
+        let efficiencyRows = null;
 
-          {group.visibleFields.map(([label, field]) => (
-            <div key={field}>
-              {showStat(label, stats[field])}
-            </div>
-          ))}
-        </div>
-      ))}
+        if (group.title === "Passing") {
+          const {
+            completionPercentage,
+            yardsPerAttempt,
+            touchdownInterceptionRatio
+          } = calculatePassingEfficiency();
 
-      {defensiveGroup && (
-        <>
-          <div className="production-group-header defense-header">
-            DEFENSE
-          </div>
+          if (
+            completionPercentage ||
+            yardsPerAttempt ||
+            touchdownInterceptionRatio
+          ) {
+            efficiencyRows = (
+              <>
+                {showStat(
+                  "Completion Percentage",
+                  completionPercentage
+                )}
+                {showStat(
+                  "Yards Per Attempt",
+                  yardsPerAttempt
+                )}
+                {showStat(
+                  "TD-to-INT Ratio",
+                  touchdownInterceptionRatio
+                )}
+              </>
+            );
+          }
+        }
 
-          <div>
-            {defensiveGroup.visibleFields.map(
-              ([label, field]) => (
-                <div key={field}>
-                  {showStat(label, stats[field])}
+        if (group.title === "Rushing") {
+          const yardsPerCarry = calculateAverage(
+            stats.rushingYards,
+            stats.carries
+          );
+
+          if (yardsPerCarry) {
+            efficiencyRows = showStat(
+              "Yards Per Carry",
+              yardsPerCarry
+            );
+          }
+        }
+
+        if (group.title === "Receiving") {
+          const yardsPerReception = calculateAverage(
+            stats.receivingYards,
+            stats.receptions
+          );
+
+          if (yardsPerReception) {
+            efficiencyRows = showStat(
+              "Yards Per Reception",
+              yardsPerReception
+            );
+          }
+        }
+
+        return (
+          <div
+            key={group.title}
+            className="production-stat-group"
+          >
+            <h4 className="detail-subsection-title">
+              {group.title}
+            </h4>
+
+            {group.visibleFields.map(([label, field]) => (
+              <div key={field}>
+                {showStat(label, stats[field])}
+              </div>
+            ))}
+
+            {efficiencyRows && (
+              <div className="calculated-stat-section">
+                <div className="calculated-stat-heading efficiency-heading">
+                  Efficiency
                 </div>
-              )
+
+                {efficiencyRows}
+              </div>
             )}
+
+            {hasTouchdownData &&
+              groupIndex === offensiveGroups.length - 1 && (
+                <div className="calculated-stat-section total-stat-section">
+                  <div className="calculated-stat-heading totals-heading">
+                    Totals
+                  </div>
+
+                  {showStat("Total Touchdowns", totalTouchdowns)}
+
+                  {hasAthTotalYardsData &&
+                    showStat("Total Yards", athTotalYards)}
+                </div>
+              )}
           </div>
+        );
+      })}
+
+      {(kickingGroup || puntingGroup) && (
+        <>
+          <div className="production-group-header special-teams-header">
+            SPECIAL TEAMS
+          </div>
+
+          {kickingGroup && (() => {
+            const fieldGoalsAttempted = Number(stats.fieldGoalsAttempted || 0);
+            const fieldGoalsMade = Number(stats.fieldGoalsMade || 0);
+            const extraPointsAttempted = Number(stats.extraPointsAttempted || 0);
+            const extraPointsMade = Number(stats.extraPointsMade || 0);
+            const kickoffs = Number(stats.kickoffs || 0);
+            const touchbacks = Number(stats.touchbacks || 0);
+
+            const fieldGoalPercentage =
+              fieldGoalsAttempted > 0
+                ? `${((fieldGoalsMade / fieldGoalsAttempted) * 100).toFixed(1)}%`
+                : null;
+
+            const extraPointPercentage =
+              extraPointsAttempted > 0
+                ? `${((extraPointsMade / extraPointsAttempted) * 100).toFixed(1)}%`
+                : null;
+
+            const touchbackPercentage =
+              kickoffs > 0
+                ? `${((touchbacks / kickoffs) * 100).toFixed(1)}%`
+                : null;
+
+            return (
+              <div className="production-stat-group">
+                <h4 className="detail-subsection-title">
+                  Kicking
+                </h4>
+
+                {kickingGroup.visibleFields.map(([label, field]) => (
+                  <div key={field}>
+                    {showStat(
+                      label,
+                      field === "longestFieldGoal" && hasValue(stats[field])
+                        ? `${stats[field]} yds`
+                        : stats[field]
+                    )}
+                  </div>
+                ))}
+
+                {(fieldGoalPercentage ||
+                  extraPointPercentage ||
+                  touchbackPercentage) && (
+                  <div className="calculated-stat-section">
+                    <div className="calculated-stat-heading efficiency-heading">
+                      Efficiency
+                    </div>
+
+                    {showStat("Field Goal Percentage", fieldGoalPercentage)}
+                    {showStat("PAT Percentage", extraPointPercentage)}
+                    {showStat("Touchback Percentage", touchbackPercentage)}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
+          {puntingGroup && (() => {
+            const punts = Number(stats.punts || 0);
+            const puntYards = Number(stats.puntYards || 0);
+            const puntsInside20 = Number(stats.puntsInside20 || 0);
+
+            const puntAverage =
+              punts > 0
+                ? (puntYards / punts).toFixed(1)
+                : null;
+
+            const inside20Percentage =
+              punts > 0
+                ? `${((puntsInside20 / punts) * 100).toFixed(1)}%`
+                : null;
+
+            return (
+              <div className="production-stat-group">
+                <h4 className="detail-subsection-title">
+                  Punting
+                </h4>
+
+                {puntingGroup.visibleFields.map(([label, field]) => (
+                  <div key={field}>
+                    {showStat(
+                      label,
+                      field === "longestPunt" && hasValue(stats[field])
+                        ? `${stats[field]} yds`
+                        : stats[field]
+                    )}
+                  </div>
+                ))}
+
+                {(puntAverage || inside20Percentage) && (
+                  <div className="calculated-stat-section">
+                    <div className="calculated-stat-heading efficiency-heading">
+                      Efficiency
+                    </div>
+
+                    {showStat("Punt Average", puntAverage)}
+                    {showStat("Inside 20 Percentage", inside20Percentage)}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+        </>
+      )}
+
+      {offensiveGroups.length > 0 ? (
+        <>
+          {specialTeamsGroup && (
+            <>
+              <div className="production-group-header special-teams-header">
+                SPECIAL TEAMS
+              </div>
+
+              <div className="production-stat-group">
+                <h4 className="detail-subsection-title">
+                  Returns
+                </h4>
+
+                {specialTeamsGroup.visibleFields.map(([label, field]) => (
+                  <div key={field}>
+                    {showStat(label, stats[field])}
+                  </div>
+                ))}
+
+                {((
+                  hasValue(stats.kickoffReturns) &&
+                  Number(stats.kickoffReturns) > 0 &&
+                  hasValue(stats.kickoffReturnYards)
+                ) || (
+                  hasValue(stats.puntReturns) &&
+                  Number(stats.puntReturns) > 0 &&
+                  hasValue(stats.puntReturnYards)
+                )) && (
+                  <div className="calculated-stat-section">
+                    <div className="calculated-stat-heading efficiency-heading">
+                      Efficiency
+                    </div>
+
+                    {hasValue(stats.kickoffReturns) &&
+                      Number(stats.kickoffReturns) > 0 &&
+                      hasValue(stats.kickoffReturnYards) &&
+                      showStat(
+                        "Kickoff Return Average",
+                        calculateAverage(
+                          stats.kickoffReturnYards,
+                          stats.kickoffReturns
+                        )
+                      )}
+
+                    {hasValue(stats.puntReturns) &&
+                      Number(stats.puntReturns) > 0 &&
+                      hasValue(stats.puntReturnYards) &&
+                      showStat(
+                        "Punt Return Average",
+                        calculateAverage(
+                          stats.puntReturnYards,
+                          stats.puntReturns
+                        )
+                      )}
+                  </div>
+                )}
+
+                {(hasValue(stats.kickoffReturnYards) ||
+                  hasValue(stats.puntReturnYards)) && (
+                  <div className="calculated-stat-section total-stat-section">
+                    <div className="calculated-stat-heading totals-heading">
+                      Totals
+                    </div>
+
+                    {showStat(
+                      "Total Return Yards",
+                      Number(stats.kickoffReturnYards || 0) +
+                        Number(stats.puntReturnYards || 0)
+                    )}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {defensiveGroup && (
+            <>
+              <div className="production-group-header defense-header">
+                DEFENSE
+              </div>
+
+              <div className="production-stat-group">
+                {defensiveGroup.visibleFields.map(
+                  ([label, field]) => (
+                    <div key={field}>
+                      {showStat(label, stats[field])}
+                    </div>
+                  )
+                )}
+
+                {totalTackles !== null && (
+                  <div className="calculated-stat-section total-stat-section">
+                    <div className="calculated-stat-heading totals-heading">
+                      Totals
+                    </div>
+
+                    {showStat("Total Tackles", totalTackles)}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          {defensiveGroup && (
+            <>
+              <div className="production-group-header defense-header">
+                DEFENSE
+              </div>
+
+              <div className="production-stat-group">
+                {defensiveGroup.visibleFields.map(
+                  ([label, field]) => (
+                    <div key={field}>
+                      {showStat(label, stats[field])}
+                    </div>
+                  )
+                )}
+
+                {totalTackles !== null && (
+                  <div className="calculated-stat-section total-stat-section">
+                    <div className="calculated-stat-heading totals-heading">
+                      Totals
+                    </div>
+
+                    {showStat("Total Tackles", totalTackles)}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {specialTeamsGroup && (
+            <>
+              <div className="production-group-header special-teams-header">
+                SPECIAL TEAMS
+              </div>
+
+              <div className="production-stat-group">
+                <h4 className="detail-subsection-title">
+                  Returns
+                </h4>
+
+                {specialTeamsGroup.visibleFields.map(([label, field]) => (
+                  <div key={field}>
+                    {showStat(label, stats[field])}
+                  </div>
+                ))}
+
+                {((
+                  hasValue(stats.kickoffReturns) &&
+                  Number(stats.kickoffReturns) > 0 &&
+                  hasValue(stats.kickoffReturnYards)
+                ) || (
+                  hasValue(stats.puntReturns) &&
+                  Number(stats.puntReturns) > 0 &&
+                  hasValue(stats.puntReturnYards)
+                )) && (
+                  <div className="calculated-stat-section">
+                    <div className="calculated-stat-heading efficiency-heading">
+                      Efficiency
+                    </div>
+
+                    {hasValue(stats.kickoffReturns) &&
+                      Number(stats.kickoffReturns) > 0 &&
+                      hasValue(stats.kickoffReturnYards) &&
+                      showStat(
+                        "Kickoff Return Average",
+                        calculateAverage(
+                          stats.kickoffReturnYards,
+                          stats.kickoffReturns
+                        )
+                      )}
+
+                    {hasValue(stats.puntReturns) &&
+                      Number(stats.puntReturns) > 0 &&
+                      hasValue(stats.puntReturnYards) &&
+                      showStat(
+                        "Punt Return Average",
+                        calculateAverage(
+                          stats.puntReturnYards,
+                          stats.puntReturns
+                        )
+                      )}
+                  </div>
+                )}
+
+                {(hasValue(stats.kickoffReturnYards) ||
+                  hasValue(stats.puntReturnYards)) && (
+                  <div className="calculated-stat-section total-stat-section">
+                    <div className="calculated-stat-heading totals-heading">
+                      Totals
+                    </div>
+
+                    {showStat(
+                      "Total Return Yards",
+                      Number(stats.kickoffReturnYards || 0) +
+                        Number(stats.puntReturnYards || 0)
+                    )}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </>
       )}
     </>
@@ -542,12 +1169,115 @@ const STAT_GROUPS = [
         )}
 
         {activeTab === "recruiting" && (
-          <div className="detail-card">
+          <div className="detail-card recruiting-detail-card">
             <h3 className="detail-card-title">Recruiting & Exposure</h3>
-            {showStat("Hudl", player.hudlLink)}
-            {showStat("Twitter / X", player.twitter)}
-            {showStat("Phone", player.phoneNumber)}
-            {showStat("Email", player.emailAddress)}
+
+            {(player.hudlLink ||
+              player.twitter ||
+              player.phoneNumber ||
+              player.emailAddress) && (
+              <section className="recruiting-contact-section">
+                <div className="recruiting-section-heading">
+                  <h4>Recruiting Links & Contact</h4>
+                </div>
+
+                <div className="recruiting-contact-grid">
+                  {player.hudlLink && (
+                    <a
+                      href={player.hudlLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="recruiting-action-tile"
+                    >
+                      <span className="recruiting-action-icon" aria-hidden="true">
+                        🎥
+                      </span>
+                      <strong>Watch Hudl Film</strong>
+                      <span className="recruiting-action-arrow" aria-hidden="true">
+                        ↗
+                      </span>
+                    </a>
+                  )}
+
+                  {player.twitter && (
+                    <a
+                      href={
+                        player.twitter.startsWith("http")
+                          ? player.twitter
+                          : `https://x.com/${player.twitter.replace("@", "")}`
+                      }
+                      target="_blank"
+                      rel="noreferrer"
+                      className="recruiting-action-tile"
+                    >
+                      <span className="recruiting-action-icon recruiting-x-icon" aria-hidden="true">
+                        𝕏
+                      </span>
+                      <strong>View X Profile</strong>
+                      <span className="recruiting-action-arrow" aria-hidden="true">
+                        ↗
+                      </span>
+                    </a>
+                  )}
+
+                  {player.phoneNumber && (
+                    <a
+                      href={`tel:${player.phoneNumber}`}
+                      className="recruiting-action-tile"
+                    >
+                      <span className="recruiting-action-icon" aria-hidden="true">
+                        ☎
+                      </span>
+                      <strong>Call Athlete</strong>
+                      <span className="recruiting-action-detail">
+                        {player.phoneNumber}
+                      </span>
+                    </a>
+                  )}
+
+                  {player.emailAddress && (
+                    <a
+                      href={`mailto:${player.emailAddress}`}
+                      className="recruiting-action-tile"
+                    >
+                      <span className="recruiting-action-icon" aria-hidden="true">
+                        ✉
+                      </span>
+                      <strong>Email Athlete</strong>
+                      <span className="recruiting-action-detail">
+                        {player.emailAddress}
+                      </span>
+                    </a>
+                  )}
+                </div>
+              </section>
+            )}
+
+            <section className="recruiting-activity-section">
+              <div className="recruiting-section-heading">
+                <h4>Recruiting Activity</h4>
+              </div>
+
+              <div className="recruiting-activity-grid">
+                {renderRecruitingList(
+                  "College Offers",
+                  player.collegeOffers,
+                  "offers"
+                )}
+
+                {renderRecruitingList(
+                  "Schools Showing Interest",
+                  player.collegesOfInterest,
+                  "interest"
+                )}
+
+                {renderRecruitingList(
+                  "Camp History",
+                  player.campsAttended,
+                  "camps"
+                )}
+              </div>
+            </section>
           </div>
         )}
       </div>

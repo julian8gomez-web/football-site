@@ -62,6 +62,12 @@ const [newPassword, setNewPassword] = useState("");
   ncaaId: "",
   phoneNumber: "",
   emailAddress: "",
+
+  // Recruiting & Exposure
+  collegeOffers: "",
+  campsAttended: "",
+  collegesOfInterest: "",
+
   gpa: "",
   fortyTime: "",
   vertical: "",
@@ -73,7 +79,14 @@ const [newPassword, setNewPassword] = useState("");
   squatMax: "",
   passingYards: "",
   rushingYards: "",
+
+  // Legacy total tackles value for older records
   tackles: "",
+
+  // Defensive tackle breakdown
+  soloTackles: "",
+  tackleAssists: "",
+
   sacks: "",
   interceptions: "",
   touchdowns: "",
@@ -92,6 +105,28 @@ receptions: "",
 receivingYards: "",
 receivingTouchdowns: "",
 
+// Special Teams Return Stats
+kickoffReturns: "",
+kickoffReturnYards: "",
+puntReturns: "",
+puntReturnYards: "",
+
+// Kicker Stats
+fieldGoalsMade: "",
+fieldGoalsAttempted: "",
+longestFieldGoal: "",
+extraPointsMade: "",
+extraPointsAttempted: "",
+kickoffs: "",
+touchbacks: "",
+
+// Punter Stats
+punts: "",
+puntYards: "",
+longestPunt: "",
+puntsInside20: "",
+fairCatchesForced: "",
+
 // OL Stats
 pancakeBlocks: "",
 sacksAllowed: "",
@@ -101,6 +136,7 @@ gamesStarted: "",
 tacklesForLoss: "",
 passBreakups: "",
 forcedFumbles: "",
+fumbleRecoveries: "",
 qbHurries: "",
 });
 
@@ -289,6 +325,12 @@ if (data.height) {
     heightInches = match[2] || "";
   }
 }
+
+const currentSeasonStats =
+  Array.isArray(data.seasonStats)
+    ? data.seasonStats.find((season) => season.isCurrent) || {}
+    : {};
+
         setFormData({
           name: data.name || "",
           position: data.position || "",
@@ -313,41 +355,88 @@ if (data.height) {
           benchMax: data.benchMax || "",
           cleanMax: data.cleanMax || "",
           squatMax: data.squatMax || "",
-          passingYards: data.passingYards || "",
-          rushingYards: data.rushingYards || "",
-          tackles: data.tackles || "",
-          sacks: data.sacks || "",
-          interceptions: data.interceptions || "",
-          touchdowns: data.touchdowns || "",
+          passingYards: currentSeasonStats.passingYards ?? data.passingYards ?? "",
+          rushingYards: currentSeasonStats.rushingYards ?? data.rushingYards ?? "",
+
+          // Defensive tackle breakdown
+          soloTackles:
+            currentSeasonStats.soloTackles ??
+            data.soloTackles ??
+            "",
+          tackleAssists:
+            currentSeasonStats.tackleAssists ??
+            data.tackleAssists ??
+            "",
+
+          // Legacy total tackles fallback for older records
+          tackles: currentSeasonStats.tackles ?? data.tackles ?? "",
+
+          sacks: currentSeasonStats.sacks ?? data.sacks ?? "",
+          interceptions: currentSeasonStats.interceptions ?? data.interceptions ?? "",
+          touchdowns: currentSeasonStats.touchdowns ?? data.touchdowns ?? "",
           // QB Stats
-          passingCompletions: data.passingCompletions || "",
-          passingAttempts: data.passingAttempts || "",
-          passingTouchdowns: data.passingTouchdowns || "",
-          interceptionsThrown: data.interceptionsThrown || "",
+          passingCompletions: currentSeasonStats.passingCompletions ?? data.passingCompletions ?? "",
+          passingAttempts: currentSeasonStats.passingAttempts ?? data.passingAttempts ?? "",
+          passingTouchdowns: currentSeasonStats.passingTouchdowns ?? data.passingTouchdowns ?? "",
+          interceptionsThrown: currentSeasonStats.interceptionsThrown ?? data.interceptionsThrown ?? "",
 
 // RB Stats
-          carries: data.carries || "",
-          rushingTouchdowns: data.rushingTouchdowns || "",
+          carries: currentSeasonStats.carries ?? data.carries ?? "",
+          rushingTouchdowns: currentSeasonStats.rushingTouchdowns ?? data.rushingTouchdowns ?? "",
 
 // WR / TE Stats
-          receptions: data.receptions || "",
-          receivingYards: data.receivingYards || "",
-          receivingTouchdowns: data.receivingTouchdowns || "",
+          receptions: currentSeasonStats.receptions ?? data.receptions ?? "",
+          receivingYards: currentSeasonStats.receivingYards ?? data.receivingYards ?? "",
+          receivingTouchdowns: currentSeasonStats.receivingTouchdowns ?? data.receivingTouchdowns ?? "",
+
+// Special Teams Return Stats
+          kickoffReturns: currentSeasonStats.kickoffReturns ?? data.kickoffReturns ?? "",
+          kickoffReturnYards: currentSeasonStats.kickoffReturnYards ?? data.kickoffReturnYards ?? "",
+          puntReturns: currentSeasonStats.puntReturns ?? data.puntReturns ?? "",
+          puntReturnYards: currentSeasonStats.puntReturnYards ?? data.puntReturnYards ?? "",
+
+// Kicker Stats
+          fieldGoalsMade: currentSeasonStats.fieldGoalsMade ?? data.fieldGoalsMade ?? "",
+          fieldGoalsAttempted: currentSeasonStats.fieldGoalsAttempted ?? data.fieldGoalsAttempted ?? "",
+          longestFieldGoal: currentSeasonStats.longestFieldGoal ?? data.longestFieldGoal ?? "",
+          extraPointsMade: currentSeasonStats.extraPointsMade ?? data.extraPointsMade ?? "",
+          extraPointsAttempted: currentSeasonStats.extraPointsAttempted ?? data.extraPointsAttempted ?? "",
+          kickoffs: currentSeasonStats.kickoffs ?? data.kickoffs ?? "",
+          touchbacks: currentSeasonStats.touchbacks ?? data.touchbacks ?? "",
+
+// Punter Stats
+          punts: currentSeasonStats.punts ?? data.punts ?? "",
+          puntYards: currentSeasonStats.puntYards ?? data.puntYards ?? "",
+          longestPunt: currentSeasonStats.longestPunt ?? data.longestPunt ?? "",
+          puntsInside20: currentSeasonStats.puntsInside20 ?? data.puntsInside20 ?? "",
+          fairCatchesForced: currentSeasonStats.fairCatchesForced ?? data.fairCatchesForced ?? "",
 
 // OL Stats
-          pancakeBlocks: data.pancakeBlocks || "",
-          sacksAllowed: data.sacksAllowed || "",
-          gamesStarted: data.gamesStarted || "",
+          pancakeBlocks: currentSeasonStats.pancakeBlocks ?? data.pancakeBlocks ?? "",
+          sacksAllowed: currentSeasonStats.sacksAllowed ?? data.sacksAllowed ?? "",
+          gamesStarted: currentSeasonStats.gamesStarted ?? data.gamesStarted ?? "",
 
 // Defensive Stats
-          tacklesForLoss: data.tacklesForLoss || "",
-          passBreakups: data.passBreakups || "",
-          forcedFumbles: data.forcedFumbles || "",
-          qbHurries: data.qbHurries || "",
+          tacklesForLoss: currentSeasonStats.tacklesForLoss ?? data.tacklesForLoss ?? "",
+          passBreakups: currentSeasonStats.passBreakups ?? data.passBreakups ?? "",
+          forcedFumbles: currentSeasonStats.forcedFumbles ?? data.forcedFumbles ?? "",
+          fumbleRecoveries: currentSeasonStats.fumbleRecoveries ?? data.fumbleRecoveries ?? "",
+          qbHurries: currentSeasonStats.qbHurries ?? data.qbHurries ?? "",
           twitter: data.twitter || "",
           ncaaId: data.ncaaId || "",
           phoneNumber: data.phoneNumber || "",
           emailAddress: data.emailAddress || "",
+
+          // Recruiting & Exposure
+          collegeOffers: Array.isArray(data.collegeOffers)
+            ? data.collegeOffers.join("\n")
+            : data.collegeOffers || "",
+          campsAttended: Array.isArray(data.campsAttended)
+            ? data.campsAttended.join("\n")
+            : data.campsAttended || "",
+          collegesOfInterest: Array.isArray(data.collegesOfInterest)
+            ? data.collegesOfInterest.join("\n")
+            : data.collegesOfInterest || "",
         });
         setMessage("Profile loaded ✅");
       } else {
@@ -389,6 +478,26 @@ if (data.height) {
     });
   };
 
+  const convertLinesToList = (value) =>
+    String(value || "")
+      .split("\n")
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+
+    if (
+      location.pathname === "/dashboard" &&
+      token &&
+      role !== "admin" &&
+      !player
+    ) {
+      loadMyProfile();
+    }
+  }, [location.pathname, player]);
+
   const handleUpdateProfile = async (e) => {
   e.preventDefault();
 
@@ -416,6 +525,11 @@ if (data.height) {
     ncaaId: formData.ncaaId,
     phoneNumber: formData.phoneNumber,
     emailAddress: formData.emailAddress,
+
+    collegeOffers: convertLinesToList(formData.collegeOffers),
+    campsAttended: convertLinesToList(formData.campsAttended),
+    collegesOfInterest: convertLinesToList(formData.collegesOfInterest),
+
     gpa: formData.gpa,
     fortyTime: formData.fortyTime,
     vertical: formData.vertical,
@@ -430,7 +544,18 @@ if (data.height) {
 
     passingYards: formData.passingYards === "" ? null : Number(formData.passingYards),
     rushingYards: formData.rushingYards === "" ? null : Number(formData.rushingYards),
-    tackles: formData.tackles === "" ? null : Number(formData.tackles),
+
+    // Players enter the raw tackle breakdown.
+    // Total tackles will be calculated on the public profile.
+    soloTackles:
+      formData.soloTackles === ""
+        ? null
+        : Number(formData.soloTackles),
+    tackleAssists:
+      formData.tackleAssists === ""
+        ? null
+        : Number(formData.tackleAssists),
+
     sacks: formData.sacks === "" ? null : Number(formData.sacks),
     interceptions: formData.interceptions === "" ? null : Number(formData.interceptions),
     touchdowns: formData.touchdowns === "" ? null : Number(formData.touchdowns),
@@ -447,6 +572,25 @@ if (data.height) {
     receivingYards: formData.receivingYards === "" ? null : Number(formData.receivingYards),
     receivingTouchdowns: formData.receivingTouchdowns === "" ? null : Number(formData.receivingTouchdowns),
 
+    kickoffReturns: formData.kickoffReturns === "" ? null : Number(formData.kickoffReturns),
+    kickoffReturnYards: formData.kickoffReturnYards === "" ? null : Number(formData.kickoffReturnYards),
+    puntReturns: formData.puntReturns === "" ? null : Number(formData.puntReturns),
+    puntReturnYards: formData.puntReturnYards === "" ? null : Number(formData.puntReturnYards),
+
+    fieldGoalsMade: formData.fieldGoalsMade === "" ? null : Number(formData.fieldGoalsMade),
+    fieldGoalsAttempted: formData.fieldGoalsAttempted === "" ? null : Number(formData.fieldGoalsAttempted),
+    longestFieldGoal: formData.longestFieldGoal === "" ? null : Number(formData.longestFieldGoal),
+    extraPointsMade: formData.extraPointsMade === "" ? null : Number(formData.extraPointsMade),
+    extraPointsAttempted: formData.extraPointsAttempted === "" ? null : Number(formData.extraPointsAttempted),
+    kickoffs: formData.kickoffs === "" ? null : Number(formData.kickoffs),
+    touchbacks: formData.touchbacks === "" ? null : Number(formData.touchbacks),
+
+    punts: formData.punts === "" ? null : Number(formData.punts),
+    puntYards: formData.puntYards === "" ? null : Number(formData.puntYards),
+    longestPunt: formData.longestPunt === "" ? null : Number(formData.longestPunt),
+    puntsInside20: formData.puntsInside20 === "" ? null : Number(formData.puntsInside20),
+    fairCatchesForced: formData.fairCatchesForced === "" ? null : Number(formData.fairCatchesForced),
+
     pancakeBlocks: formData.pancakeBlocks === "" ? null : Number(formData.pancakeBlocks),
     sacksAllowed: formData.sacksAllowed === "" ? null : Number(formData.sacksAllowed),
     gamesStarted: formData.gamesStarted === "" ? null : Number(formData.gamesStarted),
@@ -454,6 +598,7 @@ if (data.height) {
     tacklesForLoss: formData.tacklesForLoss === "" ? null : Number(formData.tacklesForLoss),
     passBreakups: formData.passBreakups === "" ? null : Number(formData.passBreakups),
     forcedFumbles: formData.forcedFumbles === "" ? null : Number(formData.forcedFumbles),
+    fumbleRecoveries: formData.fumbleRecoveries === "" ? null : Number(formData.fumbleRecoveries),
     qbHurries: formData.qbHurries === "" ? null : Number(formData.qbHurries)
   };
 
@@ -768,6 +913,9 @@ const loadAllPlayers = async () => {
     <Navbar
       handleLogout={handleLogout}
       clearMessage={() => setMessage("")}
+      message={message}
+      playerName={player?.name || ""}
+      approvedPlayerCount={approvedPlayers.length}
     />
   </>
 )}

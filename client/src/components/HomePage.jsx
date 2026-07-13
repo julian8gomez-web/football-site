@@ -104,29 +104,30 @@ const verticalOptions = [
       .filter(Boolean)
   )];
 
+  const hasActiveFilters =
+    searchTerm.trim() !== "" ||
+    positionFilter !== "" ||
+    classFilter !== "" ||
+    heightFilter !== "" ||
+    weightFilter !== "" ||
+    fortyFilter !== "" ||
+    verticalFilter !== "";
+
   return (
     <div>
-      <div className="roster-header">
-  <p className="roster-kicker">Chapin Husky Football</p>
-  <h2>Recruiting Profiles</h2>
-  <p>
-    {approvedPlayers.length} approved athlete
-    {approvedPlayers.length === 1 ? "" : "s"} available for review.
-  </p>
-</div>
-
       <div className="roster-filter-card">
   <div className="roster-filter-header">
     <div>
-      <h3>Recruiting Filters</h3>
+      <h3>Find Athletes</h3>
       <p>
         Find athletes by name, position, graduation class, or measurable.
       </p>
     </div>
 
     <strong>
-      {approvedPlayers.length} athlete
-      {approvedPlayers.length === 1 ? "" : "s"} found
+      {hasActiveFilters
+        ? `${approvedPlayers.length} Athlete${approvedPlayers.length === 1 ? "" : "s"} Found`
+        : `${approvedPlayers.length} Verified Athlete${approvedPlayers.length === 1 ? "" : "s"}`}
     </strong>
   </div>
 
@@ -303,20 +304,30 @@ const positions = [
   .filter(Boolean)
   .map((pos) => pos.trim().toUpperCase());
 
+const currentSeasonStats =
+  Array.isArray(p.seasonStats)
+    ? p.seasonStats.find((season) => season.isCurrent) ||
+      p.seasonStats[0] ||
+      {}
+    : {};
+
+const getStatValue = (field) =>
+  currentSeasonStats[field] ?? p[field];
+
 let featureLabel = "VERT";
 let featureValue = p.vertical ? `${p.vertical}"` : "N/A";
 
 if (positions.includes("QB")) {
   featureLabel = "PASS YDS";
-  featureValue = formatNumber(p.passingYards);
+  featureValue = formatNumber(getStatValue("passingYards"));
 
 } else if (positions.includes("RB")) {
   featureLabel = "RUSH YDS";
-  featureValue = formatNumber(p.rushingYards);
+  featureValue = formatNumber(getStatValue("rushingYards"));
 
 } else if (positions.includes("WR") || positions.includes("TE")) {
   featureLabel = "REC YDS";
-  featureValue = formatNumber(p.receivingYards);
+  featureValue = formatNumber(getStatValue("receivingYards"));
 
 } else if (
   positions.includes("OL") ||
@@ -325,26 +336,26 @@ if (positions.includes("QB")) {
   positions.includes("C")
 ) {
   featureLabel = "PANCAKES";
-  featureValue = formatNumber(p.pancakeBlocks);
+  featureValue = formatNumber(getStatValue("pancakeBlocks"));
 
 } else if (positions.includes("DE")) {
 
-  if (Number(p.sacks) > 0) {
+  if (Number(getStatValue("sacks")) > 0) {
     featureLabel = "SACKS";
-    featureValue = formatNumber(p.sacks);
+    featureValue = formatNumber(getStatValue("sacks"));
   } else {
     featureLabel = "TACKLES";
-    featureValue = formatNumber(p.tackles);
+    featureValue = formatNumber(getStatValue("tackles"));
   }
 
 } else if (positions.includes("DL")) {
 
-  if (Number(p.sacks) > 0) {
+  if (Number(getStatValue("sacks")) > 0) {
     featureLabel = "SACKS";
-    featureValue = formatNumber(p.sacks);
+    featureValue = formatNumber(getStatValue("sacks"));
   } else {
     featureLabel = "TACKLES";
-    featureValue = formatNumber(p.tackles);
+    featureValue = formatNumber(getStatValue("tackles"));
   }
 
 } else if (
@@ -353,7 +364,7 @@ if (positions.includes("QB")) {
   positions.includes("LB")
 ) {
   featureLabel = "TACKLES";
-  featureValue = formatNumber(p.tackles);
+  featureValue = formatNumber(getStatValue("tackles"));
 
 } else if (
   positions.includes("DB") ||
@@ -361,15 +372,17 @@ if (positions.includes("QB")) {
   positions.includes("S")
 ) {
   featureLabel = "INT";
-  featureValue = formatNumber(p.interceptions);
+  featureValue = formatNumber(getStatValue("interceptions"));
 
 } else if (positions.includes("ATH")) {
   featureLabel = "ALL-PURP YDS";
 
   const totalYards =
-    Number(p.rushingYards || 0) +
-    Number(p.receivingYards || 0) +
-    Number(p.passingYards || 0);
+    Number(getStatValue("rushingYards") || 0) +
+    Number(getStatValue("receivingYards") || 0) +
+    Number(getStatValue("passingYards") || 0) +
+    Number(getStatValue("kickoffReturnYards") || 0) +
+    Number(getStatValue("puntReturnYards") || 0);
 
   featureValue = totalYards > 0
     ? formatNumber(totalYards)
