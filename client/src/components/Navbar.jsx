@@ -12,10 +12,12 @@ function Navbar({
 
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
+  const displayName = localStorage.getItem("displayName");
 
   const accountLabel =
-    playerName ||
-    (role === "admin" ? "Admin" : token ? "Player" : "");
+  role === "admin"
+    ? displayName || "Admin"
+    : playerName || (token ? "Player" : "");
 
   useEffect(() => {
     setMenuOpen(false);

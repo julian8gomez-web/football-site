@@ -5,6 +5,10 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, default: "player" },
+  displayName: {
+  type: String,
+  default: ""
+},
   playerId: { type: mongoose.Schema.Types.ObjectId, ref: "Player", default: null },
   mustChangePassword: {type: Boolean,default: false}
 });

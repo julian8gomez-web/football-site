@@ -228,6 +228,7 @@ const filteredPendingPlayers = pendingPlayers.filter((player) => {
  const handleLogout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("role");
+  localStorage.removeItem("displayName");
   setPlayer(null);
   setPendingPlayers([]);
   setMessage("Logged out ✅");
@@ -253,7 +254,10 @@ const filteredPendingPlayers = pendingPlayers.filter((player) => {
 
   const payload = JSON.parse(atob(data.token.split(".")[1]));
   localStorage.setItem("role", payload.role);
-
+localStorage.setItem(
+  "displayName",
+  data.displayName || ""
+);
   setMessage("Login successful ✅");
 
   if (data.mustChangePassword) {

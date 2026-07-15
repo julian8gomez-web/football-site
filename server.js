@@ -296,8 +296,10 @@ console.log("PENDING UPDATES:", pendingUpdates);
 player.markModified("pendingUpdates");
 
 player.status = "pending";
+player.lastSubmittedAt = new Date();
 
 await player.save();
+
 
     res.json({
       message: "Profile changes submitted for review ✅",
@@ -405,11 +407,16 @@ if (currentSeasonStatsUpdate) {
   }
 }
 
+const approvingCoach = await User.findById(req.user.id);
+
 player.pendingUpdates = {};
 player.markModified("pendingUpdates");
 player.status = "approved";
+player.lastApprovedAt = new Date();
+player.lastApprovedBy =
+  approvingCoach?.displayName || approvingCoach?.email || "Chapin Football Staff";
 
-    await player.save();
+await player.save();
 
     res.json({
       message: "Player approved ✅",
@@ -421,6 +428,7 @@ player.status = "approved";
 });
 app.put("/admin/approve-all-pending", authMiddleware, adminMiddleware, async (req, res) => {
   try {
+    const approvingCoach = await User.findById(req.user.id);
     const pendingPlayers = await Player.find({ status: "pending" });
 
     for (const player of pendingPlayers) {
@@ -476,10 +484,15 @@ app.put("/admin/approve-all-pending", authMiddleware, adminMiddleware, async (re
   }
 
   player.pendingUpdates = {};
-  player.markModified("pendingUpdates");
-  player.status = "approved";
+player.markModified("pendingUpdates");
+player.status = "approved";
+player.lastApprovedAt = new Date();
+player.lastApprovedBy =
+  approvingCoach?.displayName ||
+  approvingCoach?.email ||
+  "Chapin Football Staff";
 
-  await player.save();
+await player.save();
 }
 
     res.json({
@@ -739,9 +752,8 @@ player.pendingUpdates = {
   profilePicture: result.secure_url
 };
 
-if (player.status !== "approved") {
-  player.status = "pending";
-}
+player.status = "pending";
+player.lastSubmittedAt = new Date();
 
 await player.save();
 

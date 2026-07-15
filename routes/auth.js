@@ -59,7 +59,8 @@ router.post("/login", async (req, res) => {
 
     res.json({
   token,
-  mustChangePassword: user.mustChangePassword
+  mustChangePassword: user.mustChangePassword,
+  displayName: user.displayName || ""
 });
   } catch (err) {
     res.status(500).json({ error: err.message });

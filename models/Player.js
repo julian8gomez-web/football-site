@@ -190,7 +190,26 @@ const playerSchema = new mongoose.Schema({
       touchdowns: Number
     }
   ],
+  // Profile activity tracking
+  lastSubmittedAt: {
+    type: Date,
+    default: null
+  },
 
+  lastApprovedAt: {
+    type: Date,
+    default: null
+  },
+
+  lastApprovedBy: {
+    type: String,
+    default: ""
+  },
+
+  pendingUpdates: {
+    type: Object,
+    default: {}
+  },
   pendingUpdates: {
     type: Object,
     default: {}
