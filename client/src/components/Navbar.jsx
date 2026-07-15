@@ -1,12 +1,15 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 function Navbar({
   handleLogout,
-  clearMessage,
-  message,
   playerName,
-  approvedPlayerCount
+  approvedPlayerCount = 0,
+  compact = false
 }) {
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
@@ -14,50 +17,65 @@ function Navbar({
     playerName ||
     (role === "admin" ? "Admin" : token ? "Player" : "");
 
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  const dashboardPath =
+    role === "admin" ? "/admin" : "/dashboard";
+
+  const dashboardLabel =
+    role === "admin" ? "Admin Dashboard" : "Player Dashboard";
+
   return (
-    <div className="navbar">
+    <nav className={`navbar ${compact ? "navbar-compact" : ""}`}>
       <div className="navbar-left">
         <Link to="/">
           <button type="button">Home</button>
         </Link>
-
-        {message && (
-          <button
-            type="button"
-            className="secondary-button"
-            onClick={clearMessage}
-          >
-            Clear Message
-          </button>
-        )}
       </div>
 
-      <Link to="/" className="navbar-recruiting-title">
-        <strong>Recruiting Profiles</strong>
-        <span>
-          {approvedPlayerCount} Verified Athlete
-          {approvedPlayerCount === 1 ? "" : "s"}
-        </span>
-      </Link>
+      {!compact && (
+        <Link to="/" className="navbar-recruiting-title">
+          <strong>Recruiting Profiles</strong>
+          <span>
+            {approvedPlayerCount} Verified Athlete
+            {approvedPlayerCount === 1 ? "" : "s"}
+          </span>
+        </Link>
+      )}
 
-      <div className="navbar-right">
+      {compact && (
+        <div className="navbar-private-title">
+          <strong>
+            {role === "admin" ? "Admin Workspace" : "Player Workspace"}
+          </strong>
+          {accountLabel && <span>{accountLabel}</span>}
+        </div>
+      )}
+
+      <button
+        type="button"
+        className="navbar-menu-toggle"
+        aria-label="Toggle navigation menu"
+        aria-expanded={menuOpen}
+        onClick={() => setMenuOpen((current) => !current)}
+      >
+        ☰
+      </button>
+
+      <div className={`navbar-right ${menuOpen ? "open" : ""}`}>
         {token ? (
           <>
-            {accountLabel && (
+            {!compact && accountLabel && (
               <span className="navbar-account-name">
                 {accountLabel}
               </span>
             )}
 
-            {role === "admin" ? (
-              <Link to="/admin">
-                <button type="button">Admin Dashboard</button>
-              </Link>
-            ) : (
-              <Link to="/dashboard">
-                <button type="button">Player Dashboard</button>
-              </Link>
-            )}
+            <Link to={dashboardPath}>
+              <button type="button">{dashboardLabel}</button>
+            </Link>
 
             <button
               type="button"
@@ -73,7 +91,7 @@ function Navbar({
           </Link>
         )}
       </div>
-    </div>
+    </nav>
   );
 }
 

@@ -338,41 +338,59 @@ if (positions.includes("QB")) {
   featureLabel = "PANCAKES";
   featureValue = formatNumber(getStatValue("pancakeBlocks"));
 
-} else if (positions.includes("DE")) {
-
-  if (Number(getStatValue("sacks")) > 0) {
-    featureLabel = "SACKS";
-    featureValue = formatNumber(getStatValue("sacks"));
-  } else {
-    featureLabel = "TACKLES";
-    featureValue = formatNumber(getStatValue("tackles"));
-  }
-
-} else if (positions.includes("DL")) {
-
-  if (Number(getStatValue("sacks")) > 0) {
-    featureLabel = "SACKS";
-    featureValue = formatNumber(getStatValue("sacks"));
-  } else {
-    featureLabel = "TACKLES";
-    featureValue = formatNumber(getStatValue("tackles"));
-  }
-
 } else if (
+  positions.includes("DE") ||
+  positions.includes("DL") ||
+  positions.includes("DT") ||
+  positions.includes("NT") ||
   positions.includes("OLB") ||
   positions.includes("MLB") ||
-  positions.includes("LB")
-) {
-  featureLabel = "TACKLES";
-  featureValue = formatNumber(getStatValue("tackles"));
-
-} else if (
+  positions.includes("ILB") ||
+  positions.includes("LB") ||
   positions.includes("DB") ||
   positions.includes("CB") ||
-  positions.includes("S")
+  positions.includes("S") ||
+  positions.includes("FS") ||
+  positions.includes("SS")
 ) {
-  featureLabel = "INT";
-  featureValue = formatNumber(getStatValue("interceptions"));
+  const soloTackles = Number(getStatValue("soloTackles") || 0);
+  const tackleAssists = Number(getStatValue("tackleAssists") || 0);
+  const storedTackles = Number(getStatValue("tackles") || 0);
+
+  const totalTackles =
+    soloTackles > 0 || tackleAssists > 0
+      ? soloTackles + tackleAssists
+      : storedTackles;
+
+  const standoutStats = [
+    {
+      label: "SACKS",
+      value: Number(getStatValue("sacks") || 0)
+    },
+    {
+      label: "PBU",
+      value: Number(getStatValue("passBreakups") || 0)
+    },
+    {
+      label: "INT",
+      value: Number(getStatValue("interceptions") || 0)
+    }
+  ];
+
+  const standoutStat = standoutStats
+    .filter((stat) => stat.value > 10)
+    .sort((a, b) => b.value - a.value)[0];
+
+  if (standoutStat) {
+    featureLabel = standoutStat.label;
+    featureValue = formatNumber(standoutStat.value);
+  } else {
+    featureLabel = "TACKLES";
+    featureValue =
+      totalTackles > 0
+        ? formatNumber(totalTackles)
+        : "N/A";
+  }
 
 } else if (positions.includes("ATH")) {
   featureLabel = "ALL-PURP YDS";

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "../utils/cropImage";
 
@@ -13,6 +13,7 @@ function PlayerDashboard({
   handleImageUpload
 }) {
   const [activeTab, setActiveTab] = useState("personal");
+  const workspaceRef = useRef(null);
   const hasPendingUpdates =
   
     player &&
@@ -62,9 +63,29 @@ const secondaryPositionOptions =
         (position) => position !== formData.position1
       );
 
+useEffect(() => {
+  if (!player || !workspaceRef.current) return;
+
+  const scrollTimer = window.setTimeout(() => {
+    workspaceRef.current?.scrollIntoView({
+      behavior: "auto",
+      block: "start"
+    });
+  }, 0);
+
+  return () => window.clearTimeout(scrollTimer);
+}, [player]);
+
   return (
-    <div>
-      <h2 className="section-title">Player Dashboard</h2>
+    <div
+      ref={workspaceRef}
+      id="player-dashboard-workspace"
+      className="private-dashboard-workspace player-dashboard-workspace"
+    >
+      <div className="private-dashboard-heading">
+        <h2 className="section-title">Player Dashboard</h2>
+        <p>Update your recruiting profile and season information.</p>
+      </div>
 
       {!player && (
         <div className="message-box">

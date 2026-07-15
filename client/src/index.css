@@ -2861,3 +2861,899 @@ input, select {
     margin: 4px 0;
   }
 }
+/* ==================================
+   ADMIN DASHBOARD - CLEAN TABLE LAYOUT
+   Add to the bottom of client/src/index.css
+================================== */
+
+.admin-dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.admin-dashboard-heading {
+  text-align: center;
+}
+
+.admin-dashboard-heading .section-title {
+  margin-bottom: 8px;
+}
+
+.admin-dashboard-heading .home-intro {
+  margin: 0;
+}
+
+.admin-season-strip,
+.admin-summary-grid,
+.admin-player-panel {
+  background: #ffffff;
+  border: 1px solid #dce7f3;
+  border-radius: 22px;
+  box-shadow: 0 12px 30px rgba(15, 47, 82, 0.08);
+}
+
+.admin-season-strip {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+}
+
+.admin-season-strip h3,
+.admin-season-strip p {
+  margin: 0;
+}
+
+.admin-season-strip p {
+  margin-top: 8px;
+  color: #58708d;
+}
+
+.admin-season-strip p strong {
+  color: #1474d4;
+  font-size: 1.08rem;
+}
+
+.admin-season-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: #eaf4ff;
+  color: #1474d4;
+  font-weight: 900;
+}
+
+.admin-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  overflow: hidden;
+}
+
+.admin-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 118px;
+  padding: 22px 26px;
+  border-right: 1px solid #e3ebf4;
+}
+
+.admin-summary-card:last-child {
+  border-right: none;
+}
+
+.admin-summary-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  border-radius: 50%;
+  background: #eaf4ff;
+  font-size: 1.2rem;
+}
+
+.admin-summary-card span,
+.admin-summary-card small {
+  display: block;
+}
+
+.admin-summary-card span {
+  color: #526985;
+  font-weight: 700;
+}
+
+.admin-summary-card strong {
+  display: block;
+  margin: 2px 0;
+  color: #072a56;
+  font-size: 1.55rem;
+}
+
+.admin-summary-card small {
+  color: #6d7f93;
+}
+
+.admin-compact-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-action-btn {
+  min-height: 40px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  box-shadow: none;
+}
+
+.admin-action-secondary {
+  color: #0b376b;
+  background: #ffffff;
+  border: 1px solid #9ebce0;
+}
+
+.admin-action-primary {
+  color: #ffffff;
+  background: #082f68;
+  border: 1px solid #082f68;
+}
+
+.admin-player-panel {
+  overflow: hidden;
+}
+
+.admin-player-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #dce7f3;
+}
+
+.admin-player-panel-header h3,
+.admin-player-panel-header p {
+  margin: 0;
+}
+
+.admin-player-panel-header p {
+  margin-top: 5px;
+  color: #6d7f93;
+}
+
+.admin-filter-row {
+  display: grid;
+  grid-template-columns: minmax(210px, 1.4fr) repeat(3, minmax(130px, 0.8fr));
+  gap: 10px;
+  width: min(760px, 100%);
+}
+
+.admin-filter-row input,
+.admin-filter-row select {
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 9px;
+}
+
+.admin-player-row-card {
+  margin: 0;
+  padding: 16px 22px;
+  border: 0;
+  border-bottom: 1px solid #e1eaf3;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.admin-player-row-card:last-child {
+  border-bottom: none;
+}
+
+.admin-player-row-card .admin-player-header {
+  align-items: center;
+}
+
+.admin-player-row-card .admin-player-header h3 {
+  margin-bottom: 4px;
+}
+
+.admin-player-row-card .admin-review-toolbar {
+  margin-top: 12px;
+}
+
+.admin-player-row-card .admin-review-toolbar button,
+.admin-player-row-card .admin-review-actions button {
+  min-height: 34px;
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 0.82rem;
+}
+
+.admin-season-footer {
+  margin: 10px auto 4px;
+  padding-top: 14px;
+  width: min(720px, 100%);
+  text-align: center;
+  border-top: 1px solid #cbd9e8;
+}
+
+.admin-season-footer-label {
+  margin-bottom: 10px;
+  color: #64768b;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.admin-advance-season-btn {
+  min-height: 38px;
+  padding: 8px 18px;
+  color: #0b4c91;
+  background: #ffffff;
+  border: 1px solid #75a7dc;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.admin-advance-season-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.admin-season-footer p {
+  margin: 10px 0 0;
+  color: #718197;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 1050px) {
+  .admin-player-panel-header {
+    flex-direction: column;
+  }
+
+  .admin-filter-row {
+    width: 100%;
+  }
+}
+
+@media (max-width: 800px) {
+  .admin-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-summary-card {
+    border-right: none;
+    border-bottom: 1px solid #e3ebf4;
+  }
+
+  .admin-summary-card:last-child {
+    border-bottom: none;
+  }
+
+  .admin-filter-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .admin-season-strip,
+  .admin-player-panel-header,
+  .admin-player-row-card {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .admin-filter-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-compact-actions {
+    flex-direction: column;
+  }
+
+  .admin-action-btn {
+    width: 100%;
+  }
+}
+/* ==================================
+   FIXED SUCCESS / ERROR MESSAGE TOAST
+   Keeps save and photo-upload messages visible
+   even when the user is scrolled down.
+   Paste at the very bottom of client/src/index.css
+================================== */
+
+.message-box {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 9999;
+
+  width: min(420px, calc(100vw - 32px));
+  margin: 0;
+  padding: 14px 18px;
+
+  background: #ffffff;
+  color: #082f5f;
+  border: 1px solid #cddced;
+  border-left: 6px solid #eab308;
+  border-radius: 12px;
+
+  box-shadow: 0 14px 35px rgba(8, 47, 95, 0.22);
+  font-weight: 700;
+  line-height: 1.4;
+
+  animation: messageToastIn 180ms ease-out;
+}
+
+@keyframes messageToastIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .message-box {
+    right: 16px;
+    bottom: 16px;
+    width: calc(100vw - 32px);
+  }
+}
+/* ADMIN PLAYER TABLE LAYOUT */
+.admin-player-table{width:100%}.admin-player-table-head,.admin-player-table-row{display:grid;grid-template-columns:minmax(220px,1.55fr) minmax(210px,1.45fr) minmax(100px,.65fr) minmax(105px,.75fr) minmax(80px,.5fr) minmax(360px,2fr);align-items:center;gap:16px}.admin-player-table-head{padding:12px 22px;color:#526985;background:#f8fbff;border-bottom:1px solid #dce7f3;font-size:.78rem;font-weight:900;letter-spacing:.03em;text-transform:uppercase}.admin-player-table-item{border-bottom:1px solid #e1eaf3}.admin-player-table-item:last-child{border-bottom:none}.admin-player-table-row{min-height:78px;padding:12px 22px;background:#fff}.admin-player-table-row:hover{background:#fbfdff}.admin-player-cell{min-width:0}.admin-player-identity{display:flex;align-items:center;gap:12px}.admin-player-identity strong,.admin-player-identity small{display:block}.admin-player-identity strong{color:#082f5f;font-size:.96rem}.admin-player-identity small{margin-top:3px;color:#6b7e94;font-size:.78rem;font-weight:700}.admin-player-avatar{display:grid;place-items:center;width:42px;height:42px;flex:0 0 42px;overflow:hidden;color:#123f73;background:#eaf3fd;border-radius:50%;font-size:.75rem;font-weight:900}.admin-player-avatar img{width:100%;height:100%;object-fit:cover}.admin-player-email span{display:block;overflow:hidden;color:#5e7188;font-size:.82rem;text-overflow:ellipsis;white-space:nowrap}.admin-class-badge{display:inline-flex;padding:5px 9px;color:#1267bd;background:#e8f3ff;border-radius:7px;font-size:.78rem;font-weight:900}.admin-change-count{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 8px;color:#304d6e;background:#f0f5fa;border-radius:999px;font-size:.78rem;font-weight:900}.admin-table-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.admin-table-btn{min-height:32px;padding:6px 10px;border-radius:7px;background:#fff;font-size:.76rem;font-weight:850;box-shadow:none}.admin-view-btn{color:#1267bd;border:1px solid #8eb9e5}.admin-approve-btn{color:#11834f;border:1px solid #79d3a6}.admin-reject-btn{color:#c62b2b;border:1px solid #f09b9b}.admin-reset-btn{color:#8b5a00;border:1px solid #e9c56e}.admin-table-expanded{padding:18px 24px 22px 76px;background:#f9fbfe;border-top:1px solid #e4ecf5}.admin-table-expanded h4{margin:0 0 14px;color:#082f5f}.admin-no-changes-message{margin:0;color:#6b7e94}.admin-empty-state{padding:34px 24px;color:#6b7e94;text-align:center}@media(max-width:1250px){.admin-player-table{overflow-x:auto}.admin-player-table-head,.admin-player-table-row{min-width:1080px}}@media(max-width:720px){.admin-player-table-head{display:none}.admin-player-table{overflow:visible}.admin-player-table-row{display:grid;grid-template-columns:1fr;min-width:0;gap:10px;padding:18px}.admin-player-cell::before{display:block;margin-bottom:4px;color:#718197;font-size:.68rem;font-weight:900;letter-spacing:.04em;text-transform:uppercase}.admin-player-email::before{content:"Email"}.admin-player-cell:nth-child(3)::before{content:"Grad Year"}.admin-player-cell:nth-child(4)::before{content:"Status"}.admin-player-cell:nth-child(5)::before{content:"Changes"}.admin-table-actions::before{content:"Actions";width:100%}.admin-player-email span{white-space:normal}.admin-table-expanded{padding:18px}}
+/* ==================================
+   ADMIN TABLE: PENDING DEFAULT + ACTION WIDTH FIX
+   Paste at the very bottom of client/src/index.css
+================================== */
+
+.admin-player-panel {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.admin-player-table-head,
+.admin-player-table-row {
+  grid-template-columns:
+    minmax(205px, 1.35fr)
+    minmax(185px, 1.2fr)
+    minmax(90px, 0.55fr)
+    minmax(100px, 0.65fr)
+    minmax(70px, 0.45fr)
+    minmax(420px, 2.5fr);
+}
+
+.admin-table-actions {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  min-width: 0;
+}
+
+.admin-table-btn {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 5px 9px;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 1280px) {
+  .admin-player-table-head,
+  .admin-player-table-row {
+    min-width: 1120px;
+  }
+}
+
+@media (max-width: 720px) {
+  .admin-player-panel {
+    overflow: visible;
+  }
+
+  .admin-table-actions {
+    flex-wrap: wrap;
+  }
+}
+/* =========================================
+   PRIVATE DASHBOARD + MOBILE WORKSPACE UPDATE
+   Paste this at the very bottom of index.css
+========================================= */
+
+.private-dashboard-workspace {
+  scroll-margin-top: 12px;
+}
+
+.private-dashboard-heading {
+  margin: 8px 0 14px;
+  text-align: left;
+}
+
+.private-dashboard-heading .section-title {
+  margin-bottom: 6px;
+}
+
+.private-dashboard-heading p {
+  margin: 0;
+  color: #5d7086;
+  font-weight: 600;
+}
+
+/* Compact private navigation */
+.navbar-compact {
+  position: sticky;
+  top: 8px;
+  z-index: 900;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  padding: 8px 10px;
+}
+
+.navbar-private-title {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #ffffff;
+  line-height: 1.15;
+}
+
+.navbar-private-title strong {
+  font-size: 0.9rem;
+}
+
+.navbar-private-title span {
+  margin-top: 3px;
+  color: #bcd3e9;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.navbar-menu-toggle {
+  display: none;
+  min-width: 42px;
+  min-height: 38px;
+  padding: 6px 10px;
+}
+
+/* Admin mobile cards */
+@media (max-width: 720px) {
+  .app-container {
+    padding: 8px 10px 30px;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .navbar {
+    position: relative;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    border-radius: 12px;
+  }
+
+  .navbar-left button,
+  .navbar-right button {
+    min-height: 38px;
+    padding: 7px 11px;
+    font-size: 0.8rem;
+  }
+
+  .navbar-menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .navbar-recruiting-title {
+    display: none;
+  }
+
+  .navbar-private-title {
+    flex: 1;
+    padding: 0 8px;
+  }
+
+  .navbar-right {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    left: 0;
+    z-index: 950;
+    padding: 10px;
+    background: #0b2d52;
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 10px;
+    box-shadow: 0 12px 26px rgba(8, 47, 95, 0.24);
+  }
+
+  .navbar-right.open {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .navbar-right a,
+  .navbar-right button {
+    width: 100%;
+  }
+
+  .private-dashboard-heading {
+    margin: 4px 0 10px;
+  }
+
+  .private-dashboard-heading .section-title {
+    font-size: 1.35rem;
+  }
+
+  .private-dashboard-heading p {
+    font-size: 0.82rem;
+  }
+
+  .profile-tabs {
+    position: sticky;
+    top: 62px;
+    z-index: 500;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 7px;
+    margin: 4px 0 12px;
+    padding: 8px;
+    overflow-x: auto;
+    background: rgba(230, 238, 247, 0.97);
+    border: 1px solid #cad9e8;
+    border-radius: 12px;
+    scrollbar-width: thin;
+  }
+
+  .profile-tab {
+    flex: 0 0 auto;
+    min-width: auto;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+
+  .admin-dashboard-heading,
+  .admin-season-strip,
+  .admin-summary-grid {
+    display: none;
+  }
+
+  .admin-dashboard-page {
+    gap: 10px;
+  }
+
+  .admin-compact-actions {
+    position: sticky;
+    top: 62px;
+    z-index: 450;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 7px;
+    padding: 8px;
+    background: rgba(230, 238, 247, 0.97);
+    border: 1px solid #cad9e8;
+    border-radius: 12px;
+  }
+
+  .admin-player-panel {
+    overflow: visible;
+    border-radius: 14px;
+  }
+
+  .admin-player-panel-header {
+    padding: 14px;
+  }
+
+  .admin-player-panel-header h3 {
+    font-size: 1.2rem;
+  }
+
+  .admin-filter-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-player-table-head {
+    display: none;
+  }
+
+  .admin-player-table {
+    overflow: visible;
+  }
+
+  .admin-player-table-item {
+    margin: 12px;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #dce7f3;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(8, 47, 95, 0.07);
+  }
+
+  .admin-player-table-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-width: 0;
+    gap: 12px;
+    padding: 15px;
+  }
+
+  .admin-player-identity,
+  .admin-player-email,
+  .admin-table-actions {
+    grid-column: 1 / -1;
+  }
+
+  .admin-player-email span {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-player-cell::before {
+    display: block;
+    margin-bottom: 4px;
+    color: #718197;
+    font-size: 0.66rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .admin-player-email::before {
+    content: "Email";
+  }
+
+  .admin-player-cell:nth-child(3)::before {
+    content: "Grad Year";
+  }
+
+  .admin-player-cell:nth-child(4)::before {
+    content: "Status";
+  }
+
+  .admin-player-cell:nth-child(5)::before {
+    content: "Changes";
+  }
+
+  .admin-table-actions::before {
+    content: "Actions";
+    width: 100%;
+  }
+
+  .admin-table-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .admin-table-btn {
+    width: 100%;
+    min-height: 38px;
+    white-space: normal;
+  }
+
+  .admin-table-expanded {
+    padding: 15px;
+  }
+
+  .admin-season-footer {
+    margin-top: 16px;
+  }
+}
+/* =========================================
+   COMPACT MOBILE ADMIN CARDS + FILTER TOGGLE
+   Paste at the very bottom of index.css
+========================================= */
+
+.admin-mobile-filter-toggle {
+  display: none;
+}
+
+.admin-player-panel-title-row {
+  display: contents;
+}
+
+@media (max-width: 720px) {
+  .admin-player-panel-header {
+    display: block;
+    padding: 12px;
+  }
+
+  .admin-player-panel-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .admin-player-panel-title-row h3 {
+    margin-bottom: 2px;
+  }
+
+  .admin-player-panel-title-row p {
+    margin: 0;
+    font-size: 0.76rem;
+    line-height: 1.3;
+  }
+
+  .admin-mobile-filter-toggle {
+    display: inline-flex;
+    flex: 0 0 auto;
+    min-height: 34px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #0b2d5c;
+    color: #ffffff;
+    font-size: 0.74rem;
+    font-weight: 800;
+  }
+
+  .admin-filter-row {
+    display: none;
+    margin-top: 10px;
+  }
+
+  .admin-filter-row.mobile-filters-open {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .admin-filter-row.mobile-filters-open input {
+    grid-column: 1 / -1;
+  }
+
+  .admin-filter-row input,
+  .admin-filter-row select {
+    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 0.86rem;
+  }
+
+  .admin-player-table-item {
+    margin: 8px 10px;
+    border-radius: 12px;
+  }
+
+  .admin-player-table-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "identity status"
+      "email email"
+      "grad changes"
+      "actions actions";
+    gap: 8px 12px;
+    min-width: 0;
+    padding: 11px 12px 12px;
+  }
+
+  .admin-player-identity {
+    grid-area: identity;
+  }
+
+  .admin-player-email {
+    grid-area: email;
+  }
+
+  .admin-player-cell:nth-child(3) {
+    grid-area: grad;
+  }
+
+  .admin-player-cell:nth-child(4) {
+    grid-area: status;
+    align-self: start;
+    justify-self: end;
+  }
+
+  .admin-player-cell:nth-child(5) {
+    grid-area: changes;
+    justify-self: end;
+  }
+
+  .admin-table-actions {
+    grid-area: actions;
+  }
+
+  .admin-player-avatar {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+    font-size: 0.68rem;
+  }
+
+  .admin-player-identity {
+    gap: 9px;
+  }
+
+  .admin-player-identity strong {
+    font-size: 0.9rem;
+    line-height: 1.1;
+  }
+
+  .admin-player-identity small {
+    margin-top: 2px;
+    font-size: 0.7rem;
+  }
+
+  .admin-status-badge {
+    padding: 5px 9px;
+    font-size: 0.68rem;
+  }
+
+  .admin-class-badge {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+
+  .admin-change-count {
+    min-width: 26px;
+    height: 26px;
+    padding: 0 7px;
+    font-size: 0.7rem;
+  }
+
+  .admin-player-email {
+    padding-top: 1px;
+  }
+
+  .admin-player-email.empty-email {
+    display: none;
+  }
+
+  .admin-player-email::before,
+  .admin-player-cell:nth-child(3)::before,
+  .admin-player-cell:nth-child(4)::before,
+  .admin-player-cell:nth-child(5)::before,
+  .admin-table-actions::before {
+    margin-bottom: 2px;
+    font-size: 0.58rem;
+  }
+
+  .admin-player-email span {
+    font-size: 0.72rem;
+  }
+
+  .admin-table-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    margin-top: 2px;
+  }
+
+  .admin-table-btn {
+    min-height: 34px;
+    padding: 6px 8px;
+    font-size: 0.7rem;
+    line-height: 1.1;
+  }
+
+  .admin-table-expanded {
+    padding: 12px;
+  }
+
+  .admin-change-item {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
+@media (max-width: 430px) {
+  .admin-filter-row.mobile-filters-open {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-filter-row.mobile-filters-open input {
+    grid-column: auto;
+  }
+}

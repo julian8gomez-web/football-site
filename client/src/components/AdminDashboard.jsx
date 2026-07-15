@@ -21,6 +21,8 @@ function AdminDashboard({
 const [showSeasonConfirm, setShowSeasonConfirm] = useState(false);
 const [seasonConfirmText, setSeasonConfirmText] = useState("");
 const [expandedPlayers, setExpandedPlayers] = useState({});
+const [showAllPlayers, setShowAllPlayers] = useState(false);
+const [showMobileFilters, setShowMobileFilters] = useState(false);
 
 const togglePlayerChanges = (playerId) => {
   setExpandedPlayers((current) => ({
@@ -189,6 +191,10 @@ const nextSeasonLabel = nextSeasonStartYear
     loadCurrentSeason();
   }, []);
 
+  useEffect(() => {
+    loadAllPlayers();
+  }, []);
+
   const uniqueStatuses = [...new Set(
     pendingPlayers
       .map((p) => p.status)
@@ -207,367 +213,345 @@ const nextSeasonLabel = nextSeasonStartYear
       .filter(Boolean)
   )];
 
+  const totalPlayersCount = pendingPlayers.length;
+  const pendingCount = pendingPlayers.filter(
+    (player) => player.status === "pending"
+  ).length;
+  const approvedCount = pendingPlayers.filter(
+    (player) => player.status === "approved"
+  ).length;
+
+  const visiblePlayers = showAllPlayers
+    ? pendingPlayers
+    : pendingPlayers.filter(
+        (player) => player.status === "pending"
+      );
+
   return (
-    <div>
-      <h2 className="section-title">Admin Player Management</h2>
-<p className="home-intro">
-  Manage player accounts, review pending updates, approve profiles, and reset passwords.
-</p>
-<div className="card" style={{ marginBottom: "20px" }}>
-  <h3>Season Management</h3>
-  <p className="small-text">
-    Current Season: {currentSeason ? currentSeason.label : "Loading..."}
-  </p>
-
-  <div className="action-row">
-    <button
-  className="primary-brand-btn"
-  type="button"
-  onClick={() => {
-    setSeasonConfirmText("");
-    setShowSeasonConfirm(true);
-  }}
-  disabled={!currentSeason}
->
-  Advance to Next Season
-</button>
-  </div>
-</div>
-{showSeasonConfirm && (
-  <div className="season-modal-overlay">
-    <div className="season-modal">
-      <h3>Advance to Next Season</h3>
-
-      <p>
-        Current Season:
-        <strong> {currentSeason?.label}</strong>
-      </p>
-
-      <p>
-        Next Season:
-        <strong> {nextSeasonLabel}</strong>
-      </p>
-
-      <div className="season-warning-box">
-        <strong>This action will:</strong>
-
-        <p>Lock the {currentSeason?.label} season.</p>
-        <p>Create the {nextSeasonLabel} season.</p>
-        <p>Create blank season statistics for every player.</p>
-      </div>
-
-      <label className="season-confirm-label">
-        Type <strong>ADVANCE</strong> to confirm:
-      </label>
-
-      <input
-        type="text"
-        value={seasonConfirmText}
-        onChange={(e) =>
-          setSeasonConfirmText(e.target.value.toUpperCase())
-        }
-        placeholder="Type ADVANCE"
-      />
-
-      <div className="action-row season-modal-actions">
-        <button
-          type="button"
-          className="secondary-brand-btn"
-          onClick={() => {
-            setShowSeasonConfirm(false);
-            setSeasonConfirmText("");
-          }}
-        >
-          Cancel
-        </button>
-
-        <button
-  type="button"
-  className="primary-brand-btn"
-  onClick={advanceSeason}
-  disabled={seasonConfirmText !== "ADVANCE"}
->
-  Advance Season
-</button>
-      </div>
-    </div>
-  </div>
-)}
-
-      <div className="action-row" style={{ marginBottom: "20px" }}>
-  <button className="load-button primary-brand-btn" onClick={loadPendingPlayers}>
-    Load Pending Players
-  </button>
-
-  <button
-    className="load-button primary-brand-btn"
-    onClick={loadAllPlayers}
-    type="button"
-  >
-    Load All Players
-  </button>
-
-  <button
-    className="load-button primary-brand-btn"
-    onClick={approveAllPendingPlayers}
-    type="button"
-  >
-    Approve All Pending Players
-  </button>
-</div>
-
-      <div className="card" style={{ marginBottom: "24px" }}>
-        <div className="form-stack">
-          <input
-            type="text"
-            placeholder="Search by player name"
-            value={adminSearchTerm}
-            onChange={(e) => setAdminSearchTerm(e.target.value)}
-          />
-
-          <select
-            value={adminStatusFilter}
-            onChange={(e) => setAdminStatusFilter(e.target.value)}
-          >
-            <option value="">All Statuses</option>
-            {uniqueStatuses.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={adminPositionFilter}
-            onChange={(e) => setAdminPositionFilter(e.target.value)}
-          >
-            <option value="">All Positions</option>
-            {uniquePositions.map((position) => (
-              <option key={position} value={position}>
-                {position}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={adminClassFilter}
-            onChange={(e) => setAdminClassFilter(e.target.value)}
-          >
-            <option value="">All Classes</option>
-            {uniqueClasses.map((playerClass) => (
-              <option key={playerClass} value={playerClass}>
-                {playerClass}
-              </option>
-            ))}
-          </select>
+    <div className="admin-dashboard-page">
+      <div className="admin-dashboard-heading">
+        <div>
+          <h2 className="section-title">Admin Player Management</h2>
+          <p className="home-intro">
+            Manage player accounts, review pending updates, approve profiles,
+            and reset passwords.
+          </p>
         </div>
       </div>
 
-      {pendingPlayers.length === 0 ? (
-        <p>No pending players right now.</p>
-      ) : (
-        pendingPlayers.map((p) => {
-          const isExpanded = Boolean(expandedPlayers[p._id]);
-          const effectiveChanges = getEffectiveChanges(p);
-          const changeCount = effectiveChanges.length;
+      <section className="admin-season-strip">
+        <div className="admin-season-icon" aria-hidden="true">▣</div>
 
-          return (
-            <div key={p._id} className="card admin-review-card">
-              <div className="admin-player-header">
-                <div>
-                  <h3>{p.name}</h3>
+        <div>
+          <h3>Season Management</h3>
+          <p>
+            Current Season:
+            <strong> {currentSeason ? currentSeason.label : "Loading..."}</strong>
+          </p>
+        </div>
+      </section>
 
-                  <p className="admin-player-subtext">
-                    {p.position1
-                      ? p.position2
-                        ? `${p.position1}/${p.position2}`
-                        : p.position1
-                      : p.position || "No position"}{" "}
-                    • Class {p.playerClass || "N/A"} • #
-                    {p.jerseyNumber || "N/A"}
-                  </p>
-                </div>
+      <section className="admin-summary-grid">
+        <div className="admin-summary-card">
+          <div className="admin-summary-icon">👥</div>
+          <div>
+            <span>Total Players</span>
+            <strong>{totalPlayersCount}</strong>
+            <small>Currently loaded</small>
+          </div>
+        </div>
 
-                <div className="admin-review-summary">
-                  <span
-                    className={`admin-status-badge status-${p.status || "unknown"}`}
-                  >
-                    {p.status || "unknown"}
-                  </span>
+        <div className="admin-summary-card">
+          <div className="admin-summary-icon">◷</div>
+          <div>
+            <span>Pending Updates</span>
+            <strong>{pendingCount}</strong>
+            <small>Needs review</small>
+          </div>
+        </div>
 
-                  <span className="admin-change-count">
-                    {changeCount} change
-                    {changeCount === 1 ? "" : "s"}
-                  </span>
-                </div>
-              </div>
+        <div className="admin-summary-card">
+          <div className="admin-summary-icon">✓</div>
+          <div>
+            <span>Approved Players</span>
+            <strong>{approvedCount}</strong>
+            <small>Active profiles</small>
+          </div>
+        </div>
+      </section>
 
-              <div className="admin-review-toolbar">
-                <button
-                  type="button"
-                  className="secondary-brand-btn"
-                  onClick={() => togglePlayerChanges(p._id)}
-                  aria-expanded={isExpanded}
-                >
-                  {isExpanded ? "Hide Changes" : "View Changes"}
-                </button>
+      <div className="admin-compact-actions">
+        <button
+          className="admin-action-btn admin-action-secondary"
+          onClick={() => {
+            setShowAllPlayers(true);
+            loadAllPlayers();
+          }}
+          type="button"
+        >
+          Load All Players
+        </button>
 
-                <div className="action-row admin-review-actions">
-                  <button
-                    className="primary-brand-btn"
-                    onClick={() => approvePlayer(p._id)}
-                  >
-                    Approve
-                  </button>
+        <button
+          className="admin-action-btn admin-action-primary"
+          onClick={approveAllPendingPlayers}
+          type="button"
+        >
+          Approve All Pending Players
+        </button>
+      </div>
 
-                  <button
-                    className="reject-brand-btn"
-                    onClick={() => rejectPlayer(p._id)}
-                  >
-                    Reject
-                  </button>
-
-                  <button
-                    className="primary-brand-btn"
-                    type="button"
-                    onClick={() => resetPlayerPassword(p._id)}
-                  >
-                    Reset Password
-                  </button>
-                </div>
-              </div>
-
-              {isExpanded && (
-                <div className="admin-change-panel">
-                  {effectiveChanges.length > 0 ? (
-                    <>
-                      <h4>Requested Changes</h4>
-
-                      {effectiveChanges.map((change, index) => (
-                        <div
-                          key={`${change.field}-${index}`}
-                          className="admin-change-item"
-                        >
-                          <p className="admin-change-label">
-                            <strong>
-                              {formatFieldLabel(change.field)}
-                            </strong>
-                          </p>
-
-                          {change.field === "currentSeasonStats" ? (
-                            <div className="season-stat-review">
-                              <p className="admin-change-season">
-                                <strong>Season:</strong>{" "}
-                                {change.newValue?.season ||
-                                  "Unknown season"}
-                              </p>
-
-                              {Object.entries(
-                                change.newValue?.stats || {}
-                              ).map(([statName, newValue]) => {
-                                const existingSeason =
-                                  p.seasonStats?.find(
-                                    (season) =>
-                                      season.season ===
-                                      change.newValue?.season
-                                  );
-
-                                const oldValue =
-                                  existingSeason?.[statName];
-
-                                return (
-                                  <div
-                                    key={statName}
-                                    className="admin-stat-change-row"
-                                  >
-                                    <strong>
-                                      {formatFieldLabel(statName)}
-                                    </strong>
-
-                                    <span>
-                                      <span className="admin-old-value">
-                                        {formatReviewValue(oldValue)}
-                                      </span>
-
-                                      <span className="admin-change-arrow">
-                                        →
-                                      </span>
-
-                                      <span className="admin-new-value">
-                                        {formatReviewValue(newValue)}
-                                      </span>
-                                    </span>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          ) : change.field === "profilePicture" ? (
-                            <div className="admin-picture-comparison">
-                              <div>
-                                <p className="admin-old-heading">
-                                  Current
-                                </p>
-
-                                {change.oldValue ? (
-                                  <img
-                                    src={change.oldValue}
-                                    alt="Current profile"
-                                    className="admin-review-image"
-                                  />
-                                ) : (
-                                  <div className="admin-empty-image">
-                                    Empty
-                                  </div>
-                                )}
-                              </div>
-
-                              <div>
-                                <p className="admin-new-heading">
-                                  Requested
-                                </p>
-
-                                {change.newValue ? (
-                                  <img
-                                    src={change.newValue}
-                                    alt="Requested profile"
-                                    className="admin-review-image requested"
-                                  />
-                                ) : (
-                                  <div className="admin-empty-image requested">
-                                    Empty
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="admin-simple-change">
-                              <span className="admin-old-value">
-                                {formatReviewValue(change.oldValue)}
-                              </span>
-
-                              <span className="admin-change-arrow">
-                                →
-                              </span>
-
-                              <span className="admin-new-value">
-                                {formatReviewValue(change.newValue)}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </>
-                  ) : (
-                    <p>
-                      No actual value changes were found. The submitted
-                      values match the current approved profile.
-                    </p>
-                  )}
-                </div>
-              )}
+      <section className="admin-player-panel">
+        <div className="admin-player-panel-header">
+          <div className="admin-player-panel-title-row">
+            <div>
+              <h3>{showAllPlayers ? "All Players" : "Pending Players"}</h3>
+              <p>
+                {showAllPlayers
+                  ? "Search and filter the full player list."
+                  : "Players awaiting profile approval or update review."}
+              </p>
             </div>
-          );
-        })
+
+            <button
+              type="button"
+              className="admin-mobile-filter-toggle"
+              onClick={() => setShowMobileFilters((current) => !current)}
+              aria-expanded={showMobileFilters}
+            >
+              {showMobileFilters ? "Hide Filters ▲" : "Filters ▼"}
+            </button>
+          </div>
+
+          <div
+            className={`admin-filter-row ${
+              showMobileFilters ? "mobile-filters-open" : ""
+            }`}
+          >
+            <input
+              type="text"
+              placeholder="Search players..."
+              value={adminSearchTerm}
+              onChange={(e) => setAdminSearchTerm(e.target.value)}
+            />
+
+            <select
+              value={adminStatusFilter}
+              onChange={(e) => setAdminStatusFilter(e.target.value)}
+            >
+              <option value="">All Statuses</option>
+              {uniqueStatuses.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={adminPositionFilter}
+              onChange={(e) => setAdminPositionFilter(e.target.value)}
+            >
+              <option value="">All Positions</option>
+              {uniquePositions.map((position) => (
+                <option key={position} value={position}>
+                  {position}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={adminClassFilter}
+              onChange={(e) => setAdminClassFilter(e.target.value)}
+            >
+              <option value="">All Classes</option>
+              {uniqueClasses.map((playerClass) => (
+                <option key={playerClass} value={playerClass}>
+                  {playerClass}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+      {visiblePlayers.length === 0 ? (
+        <div className="admin-empty-state">
+          No players match the current search or filters.
+        </div>
+      ) : (
+        <div className="admin-player-table">
+          <div className="admin-player-table-head">
+            <span>Player</span><span>Email</span><span>Grad Year</span><span>Status</span><span>Changes</span><span>Actions</span>
+          </div>
+          {visiblePlayers.map((p) => {
+            const isExpanded = Boolean(expandedPlayers[p._id]);
+            const effectiveChanges = getEffectiveChanges(p);
+            const changeCount = effectiveChanges.length;
+            const positionText = p.position1
+              ? p.position2
+                ? `${p.position1}/${p.position2}`
+                : p.position1
+              : p.position || "No position";
+            return (
+              <div key={p._id} className="admin-player-table-item">
+                <div className="admin-player-table-row">
+                  <div className="admin-player-cell admin-player-identity">
+                    <div className="admin-player-avatar">
+                      {p.profilePicture ? (
+                        <img src={p.profilePicture} alt={p.name} />
+                      ) : (
+                        <span>{(p.name || "CH").split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase()}</span>
+                      )}
+                    </div>
+                    <div>
+                      <strong>{p.name}</strong>
+                      <small>{positionText}{p.jerseyNumber ? ` #${p.jerseyNumber}` : ""}</small>
+                    </div>
+                  </div>
+                  <div
+                    className={`admin-player-cell admin-player-email ${
+                      p.emailAddress || p.email ? "" : "empty-email"
+                    }`}
+                  >
+                    <span>{p.emailAddress || p.email || "Not provided"}</span>
+                  </div>
+                  <div className="admin-player-cell"><span className="admin-class-badge">{p.playerClass || "N/A"}</span></div>
+                  <div className="admin-player-cell"><span className={`admin-status-badge status-${p.status || "unknown"}`}>{p.status || "unknown"}</span></div>
+                  <div className="admin-player-cell"><span className="admin-change-count">{changeCount}</span></div>
+                  <div className="admin-player-cell admin-table-actions">
+                    <button type="button" className="admin-table-btn admin-view-btn" onClick={() => togglePlayerChanges(p._id)} aria-expanded={isExpanded}>{isExpanded ? "Hide" : "View"}</button>
+                    {p.status === "pending" && (
+                      <>
+                        <button type="button" className="admin-table-btn admin-approve-btn" onClick={() => approvePlayer(p._id)}>Approve</button>
+                        <button type="button" className="admin-table-btn admin-reject-btn" onClick={() => rejectPlayer(p._id)}>Reject</button>
+                      </>
+                    )}
+                    <button type="button" className="admin-table-btn admin-reset-btn" onClick={() => resetPlayerPassword(p._id)}>Reset Password</button>
+                  </div>
+                </div>
+                {isExpanded && (
+                  <div className="admin-table-expanded">
+                    {effectiveChanges.length > 0 ? (
+                      <>
+                        <h4>Requested Changes</h4>
+                        {effectiveChanges.map((change, index) => (
+                          <div key={`${change.field}-${index}`} className="admin-change-item">
+                            <p className="admin-change-label"><strong>{formatFieldLabel(change.field)}</strong></p>
+                            {change.field === "currentSeasonStats" ? (
+                              <div className="season-stat-review">
+                                <p className="admin-change-season"><strong>Season:</strong> {change.newValue?.season || "Unknown season"}</p>
+                                {Object.entries(change.newValue?.stats || {}).map(([statName, newValue]) => {
+                                  const existingSeason = p.seasonStats?.find((season) => season.season === change.newValue?.season);
+                                  const oldValue = existingSeason?.[statName];
+                                  return (
+                                    <div key={statName} className="admin-stat-change-row">
+                                      <strong>{formatFieldLabel(statName)}</strong>
+                                      <span><span className="admin-old-value">{formatReviewValue(oldValue)}</span><span className="admin-change-arrow">→</span><span className="admin-new-value">{formatReviewValue(newValue)}</span></span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ) : change.field === "profilePicture" ? (
+                              <div className="admin-picture-comparison">
+                                <div><p className="admin-old-heading">Current</p>{change.oldValue ? <img src={change.oldValue} alt="Current profile" className="admin-review-image" /> : <div className="admin-empty-image">Empty</div>}</div>
+                                <div><p className="admin-new-heading">Requested</p>{change.newValue ? <img src={change.newValue} alt="Requested profile" className="admin-review-image requested" /> : <div className="admin-empty-image requested">Empty</div>}</div>
+                              </div>
+                            ) : (
+                              <div className="admin-simple-change"><span className="admin-old-value">{formatReviewValue(change.oldValue)}</span><span className="admin-change-arrow">→</span><span className="admin-new-value">{formatReviewValue(change.newValue)}</span></div>
+                            )}
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      <p className="admin-no-changes-message">No actual value changes were found. The submitted values match the current approved profile.</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+      </section>
+
+      <section className="admin-season-footer">
+        <div className="admin-season-footer-label">Season Administration</div>
+
+        <button
+          className="admin-advance-season-btn"
+          type="button"
+          onClick={() => {
+            setSeasonConfirmText("");
+            setShowSeasonConfirm(true);
+          }}
+          disabled={!currentSeason}
+        >
+          Advance Season →
+        </button>
+
+        <p>
+          This will archive the current season and create a new one.
+          <strong> Use with caution.</strong>
+        </p>
+      </section>
+
+      {showSeasonConfirm && (
+        <div className="season-modal-overlay">
+          <div className="season-modal">
+            <h3>Advance to Next Season</h3>
+
+            <p>
+              Current Season:
+              <strong> {currentSeason?.label}</strong>
+            </p>
+
+            <p>
+              Next Season:
+              <strong> {nextSeasonLabel}</strong>
+            </p>
+
+            <div className="season-warning-box">
+              <strong>This action will:</strong>
+              <p>Lock the {currentSeason?.label} season.</p>
+              <p>Create the {nextSeasonLabel} season.</p>
+              <p>Create blank season statistics for every player.</p>
+            </div>
+
+            <label className="season-confirm-label">
+              Type <strong>ADVANCE</strong> to confirm:
+            </label>
+
+            <input
+              type="text"
+              value={seasonConfirmText}
+              onChange={(e) =>
+                setSeasonConfirmText(e.target.value.toUpperCase())
+              }
+              placeholder="Type ADVANCE"
+            />
+
+            <div className="action-row season-modal-actions">
+              <button
+                type="button"
+                className="secondary-brand-btn"
+                onClick={() => {
+                  setShowSeasonConfirm(false);
+                  setSeasonConfirmText("");
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="primary-brand-btn"
+                onClick={advanceSeason}
+                disabled={seasonConfirmText !== "ADVANCE"}
+              >
+                Advance Season
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

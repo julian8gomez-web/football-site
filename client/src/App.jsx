@@ -25,6 +25,10 @@ const isPublicPlayerPage =
   location.pathname.startsWith("/player/") ||
   location.pathname.startsWith("/players/");
 
+const isPrivateDashboardPage =
+  location.pathname === "/dashboard" ||
+  location.pathname === "/admin";
+
   const [approvedPlayers, setApprovedPlayers] = useState([]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,12 +66,6 @@ const [newPassword, setNewPassword] = useState("");
   ncaaId: "",
   phoneNumber: "",
   emailAddress: "",
-
-  // Recruiting & Exposure
-  collegeOffers: "",
-  campsAttended: "",
-  collegesOfInterest: "",
-
   gpa: "",
   fortyTime: "",
   vertical: "",
@@ -79,14 +77,7 @@ const [newPassword, setNewPassword] = useState("");
   squatMax: "",
   passingYards: "",
   rushingYards: "",
-
-  // Legacy total tackles value for older records
   tackles: "",
-
-  // Defensive tackle breakdown
-  soloTackles: "",
-  tackleAssists: "",
-
   sacks: "",
   interceptions: "",
   touchdowns: "",
@@ -105,28 +96,6 @@ receptions: "",
 receivingYards: "",
 receivingTouchdowns: "",
 
-// Special Teams Return Stats
-kickoffReturns: "",
-kickoffReturnYards: "",
-puntReturns: "",
-puntReturnYards: "",
-
-// Kicker Stats
-fieldGoalsMade: "",
-fieldGoalsAttempted: "",
-longestFieldGoal: "",
-extraPointsMade: "",
-extraPointsAttempted: "",
-kickoffs: "",
-touchbacks: "",
-
-// Punter Stats
-punts: "",
-puntYards: "",
-longestPunt: "",
-puntsInside20: "",
-fairCatchesForced: "",
-
 // OL Stats
 pancakeBlocks: "",
 sacksAllowed: "",
@@ -136,7 +105,6 @@ gamesStarted: "",
 tacklesForLoss: "",
 passBreakups: "",
 forcedFumbles: "",
-fumbleRecoveries: "",
 qbHurries: "",
 });
 
@@ -147,6 +115,26 @@ useEffect(() => {
     .then((data) => setApprovedPlayers(data))
     .catch((err) => console.error("Error fetching approved players:", err));
 }, []);
+
+useEffect(() => {
+  if (!message) return undefined;
+
+  const messageTimer = window.setTimeout(() => {
+    setMessage("");
+  }, 5000);
+
+  return () => {
+    window.clearTimeout(messageTimer);
+  };
+}, [message]);
+
+useEffect(() => {
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: "auto"
+  });
+}, [location.pathname]);
 const convertHeightToInches = (height) => {
   if (!height) return null;
 
@@ -325,12 +313,6 @@ if (data.height) {
     heightInches = match[2] || "";
   }
 }
-
-const currentSeasonStats =
-  Array.isArray(data.seasonStats)
-    ? data.seasonStats.find((season) => season.isCurrent) || {}
-    : {};
-
         setFormData({
           name: data.name || "",
           position: data.position || "",
@@ -355,88 +337,41 @@ const currentSeasonStats =
           benchMax: data.benchMax || "",
           cleanMax: data.cleanMax || "",
           squatMax: data.squatMax || "",
-          passingYards: currentSeasonStats.passingYards ?? data.passingYards ?? "",
-          rushingYards: currentSeasonStats.rushingYards ?? data.rushingYards ?? "",
-
-          // Defensive tackle breakdown
-          soloTackles:
-            currentSeasonStats.soloTackles ??
-            data.soloTackles ??
-            "",
-          tackleAssists:
-            currentSeasonStats.tackleAssists ??
-            data.tackleAssists ??
-            "",
-
-          // Legacy total tackles fallback for older records
-          tackles: currentSeasonStats.tackles ?? data.tackles ?? "",
-
-          sacks: currentSeasonStats.sacks ?? data.sacks ?? "",
-          interceptions: currentSeasonStats.interceptions ?? data.interceptions ?? "",
-          touchdowns: currentSeasonStats.touchdowns ?? data.touchdowns ?? "",
+          passingYards: data.passingYards || "",
+          rushingYards: data.rushingYards || "",
+          tackles: data.tackles || "",
+          sacks: data.sacks || "",
+          interceptions: data.interceptions || "",
+          touchdowns: data.touchdowns || "",
           // QB Stats
-          passingCompletions: currentSeasonStats.passingCompletions ?? data.passingCompletions ?? "",
-          passingAttempts: currentSeasonStats.passingAttempts ?? data.passingAttempts ?? "",
-          passingTouchdowns: currentSeasonStats.passingTouchdowns ?? data.passingTouchdowns ?? "",
-          interceptionsThrown: currentSeasonStats.interceptionsThrown ?? data.interceptionsThrown ?? "",
+          passingCompletions: data.passingCompletions || "",
+          passingAttempts: data.passingAttempts || "",
+          passingTouchdowns: data.passingTouchdowns || "",
+          interceptionsThrown: data.interceptionsThrown || "",
 
 // RB Stats
-          carries: currentSeasonStats.carries ?? data.carries ?? "",
-          rushingTouchdowns: currentSeasonStats.rushingTouchdowns ?? data.rushingTouchdowns ?? "",
+          carries: data.carries || "",
+          rushingTouchdowns: data.rushingTouchdowns || "",
 
 // WR / TE Stats
-          receptions: currentSeasonStats.receptions ?? data.receptions ?? "",
-          receivingYards: currentSeasonStats.receivingYards ?? data.receivingYards ?? "",
-          receivingTouchdowns: currentSeasonStats.receivingTouchdowns ?? data.receivingTouchdowns ?? "",
-
-// Special Teams Return Stats
-          kickoffReturns: currentSeasonStats.kickoffReturns ?? data.kickoffReturns ?? "",
-          kickoffReturnYards: currentSeasonStats.kickoffReturnYards ?? data.kickoffReturnYards ?? "",
-          puntReturns: currentSeasonStats.puntReturns ?? data.puntReturns ?? "",
-          puntReturnYards: currentSeasonStats.puntReturnYards ?? data.puntReturnYards ?? "",
-
-// Kicker Stats
-          fieldGoalsMade: currentSeasonStats.fieldGoalsMade ?? data.fieldGoalsMade ?? "",
-          fieldGoalsAttempted: currentSeasonStats.fieldGoalsAttempted ?? data.fieldGoalsAttempted ?? "",
-          longestFieldGoal: currentSeasonStats.longestFieldGoal ?? data.longestFieldGoal ?? "",
-          extraPointsMade: currentSeasonStats.extraPointsMade ?? data.extraPointsMade ?? "",
-          extraPointsAttempted: currentSeasonStats.extraPointsAttempted ?? data.extraPointsAttempted ?? "",
-          kickoffs: currentSeasonStats.kickoffs ?? data.kickoffs ?? "",
-          touchbacks: currentSeasonStats.touchbacks ?? data.touchbacks ?? "",
-
-// Punter Stats
-          punts: currentSeasonStats.punts ?? data.punts ?? "",
-          puntYards: currentSeasonStats.puntYards ?? data.puntYards ?? "",
-          longestPunt: currentSeasonStats.longestPunt ?? data.longestPunt ?? "",
-          puntsInside20: currentSeasonStats.puntsInside20 ?? data.puntsInside20 ?? "",
-          fairCatchesForced: currentSeasonStats.fairCatchesForced ?? data.fairCatchesForced ?? "",
+          receptions: data.receptions || "",
+          receivingYards: data.receivingYards || "",
+          receivingTouchdowns: data.receivingTouchdowns || "",
 
 // OL Stats
-          pancakeBlocks: currentSeasonStats.pancakeBlocks ?? data.pancakeBlocks ?? "",
-          sacksAllowed: currentSeasonStats.sacksAllowed ?? data.sacksAllowed ?? "",
-          gamesStarted: currentSeasonStats.gamesStarted ?? data.gamesStarted ?? "",
+          pancakeBlocks: data.pancakeBlocks || "",
+          sacksAllowed: data.sacksAllowed || "",
+          gamesStarted: data.gamesStarted || "",
 
 // Defensive Stats
-          tacklesForLoss: currentSeasonStats.tacklesForLoss ?? data.tacklesForLoss ?? "",
-          passBreakups: currentSeasonStats.passBreakups ?? data.passBreakups ?? "",
-          forcedFumbles: currentSeasonStats.forcedFumbles ?? data.forcedFumbles ?? "",
-          fumbleRecoveries: currentSeasonStats.fumbleRecoveries ?? data.fumbleRecoveries ?? "",
-          qbHurries: currentSeasonStats.qbHurries ?? data.qbHurries ?? "",
+          tacklesForLoss: data.tacklesForLoss || "",
+          passBreakups: data.passBreakups || "",
+          forcedFumbles: data.forcedFumbles || "",
+          qbHurries: data.qbHurries || "",
           twitter: data.twitter || "",
           ncaaId: data.ncaaId || "",
           phoneNumber: data.phoneNumber || "",
           emailAddress: data.emailAddress || "",
-
-          // Recruiting & Exposure
-          collegeOffers: Array.isArray(data.collegeOffers)
-            ? data.collegeOffers.join("\n")
-            : data.collegeOffers || "",
-          campsAttended: Array.isArray(data.campsAttended)
-            ? data.campsAttended.join("\n")
-            : data.campsAttended || "",
-          collegesOfInterest: Array.isArray(data.collegesOfInterest)
-            ? data.collegesOfInterest.join("\n")
-            : data.collegesOfInterest || "",
         });
         setMessage("Profile loaded ✅");
       } else {
@@ -448,55 +383,11 @@ const currentSeasonStats =
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData((currentFormData) => {
-      const updatedFormData = {
-        ...currentFormData,
-        [name]: value
-      };
-
-      if (name === "position1") {
-        const specialTeamsPositions = ["K", "P", "LS"];
-
-        if (
-          value === "ATH" &&
-          !specialTeamsPositions.includes(currentFormData.position2)
-        ) {
-          updatedFormData.position2 = "";
-        }
-
-        if (
-          value !== "ATH" &&
-          currentFormData.position2 === value
-        ) {
-          updatedFormData.position2 = "";
-        }
-      }
-
-      return updatedFormData;
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
     });
   };
-
-  const convertLinesToList = (value) =>
-    String(value || "")
-      .split("\n")
-      .map((item) => item.trim())
-      .filter(Boolean);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
-
-    if (
-      location.pathname === "/dashboard" &&
-      token &&
-      role !== "admin" &&
-      !player
-    ) {
-      loadMyProfile();
-    }
-  }, [location.pathname, player]);
 
   const handleUpdateProfile = async (e) => {
   e.preventDefault();
@@ -525,11 +416,6 @@ const currentSeasonStats =
     ncaaId: formData.ncaaId,
     phoneNumber: formData.phoneNumber,
     emailAddress: formData.emailAddress,
-
-    collegeOffers: convertLinesToList(formData.collegeOffers),
-    campsAttended: convertLinesToList(formData.campsAttended),
-    collegesOfInterest: convertLinesToList(formData.collegesOfInterest),
-
     gpa: formData.gpa,
     fortyTime: formData.fortyTime,
     vertical: formData.vertical,
@@ -544,18 +430,7 @@ const currentSeasonStats =
 
     passingYards: formData.passingYards === "" ? null : Number(formData.passingYards),
     rushingYards: formData.rushingYards === "" ? null : Number(formData.rushingYards),
-
-    // Players enter the raw tackle breakdown.
-    // Total tackles will be calculated on the public profile.
-    soloTackles:
-      formData.soloTackles === ""
-        ? null
-        : Number(formData.soloTackles),
-    tackleAssists:
-      formData.tackleAssists === ""
-        ? null
-        : Number(formData.tackleAssists),
-
+    tackles: formData.tackles === "" ? null : Number(formData.tackles),
     sacks: formData.sacks === "" ? null : Number(formData.sacks),
     interceptions: formData.interceptions === "" ? null : Number(formData.interceptions),
     touchdowns: formData.touchdowns === "" ? null : Number(formData.touchdowns),
@@ -572,25 +447,6 @@ const currentSeasonStats =
     receivingYards: formData.receivingYards === "" ? null : Number(formData.receivingYards),
     receivingTouchdowns: formData.receivingTouchdowns === "" ? null : Number(formData.receivingTouchdowns),
 
-    kickoffReturns: formData.kickoffReturns === "" ? null : Number(formData.kickoffReturns),
-    kickoffReturnYards: formData.kickoffReturnYards === "" ? null : Number(formData.kickoffReturnYards),
-    puntReturns: formData.puntReturns === "" ? null : Number(formData.puntReturns),
-    puntReturnYards: formData.puntReturnYards === "" ? null : Number(formData.puntReturnYards),
-
-    fieldGoalsMade: formData.fieldGoalsMade === "" ? null : Number(formData.fieldGoalsMade),
-    fieldGoalsAttempted: formData.fieldGoalsAttempted === "" ? null : Number(formData.fieldGoalsAttempted),
-    longestFieldGoal: formData.longestFieldGoal === "" ? null : Number(formData.longestFieldGoal),
-    extraPointsMade: formData.extraPointsMade === "" ? null : Number(formData.extraPointsMade),
-    extraPointsAttempted: formData.extraPointsAttempted === "" ? null : Number(formData.extraPointsAttempted),
-    kickoffs: formData.kickoffs === "" ? null : Number(formData.kickoffs),
-    touchbacks: formData.touchbacks === "" ? null : Number(formData.touchbacks),
-
-    punts: formData.punts === "" ? null : Number(formData.punts),
-    puntYards: formData.puntYards === "" ? null : Number(formData.puntYards),
-    longestPunt: formData.longestPunt === "" ? null : Number(formData.longestPunt),
-    puntsInside20: formData.puntsInside20 === "" ? null : Number(formData.puntsInside20),
-    fairCatchesForced: formData.fairCatchesForced === "" ? null : Number(formData.fairCatchesForced),
-
     pancakeBlocks: formData.pancakeBlocks === "" ? null : Number(formData.pancakeBlocks),
     sacksAllowed: formData.sacksAllowed === "" ? null : Number(formData.sacksAllowed),
     gamesStarted: formData.gamesStarted === "" ? null : Number(formData.gamesStarted),
@@ -598,7 +454,6 @@ const currentSeasonStats =
     tacklesForLoss: formData.tacklesForLoss === "" ? null : Number(formData.tacklesForLoss),
     passBreakups: formData.passBreakups === "" ? null : Number(formData.passBreakups),
     forcedFumbles: formData.forcedFumbles === "" ? null : Number(formData.forcedFumbles),
-    fumbleRecoveries: formData.fumbleRecoveries === "" ? null : Number(formData.fumbleRecoveries),
     qbHurries: formData.qbHurries === "" ? null : Number(formData.qbHurries)
   };
 
@@ -888,34 +743,35 @@ const loadAllPlayers = async () => {
   </div>
 ) : (
   <>
-    <div className="app-header">
-      <div className="brand-row">
-        <img
-          src={huskyHead}
-          alt="Chapin Huskies logo"
-          className="brand-logo"
-        />
+    {!isPrivateDashboardPage && (
+      <div className="app-header">
+        <div className="brand-row">
+          <img
+            src={huskyHead}
+            alt="Chapin Huskies logo"
+            className="brand-logo"
+          />
 
-        <div className="brand-text">
-          <h1>Chapin Husky Football</h1>
+          <div className="brand-text">
+            <h1>Chapin Husky Football</h1>
 
-          <p className="brand-tagline">
-            Built for the Dawgs
-          </p>
+            <p className="brand-tagline">
+              Built for the Dawgs
+            </p>
 
-          <p className="app-subtitle">
-            Official Recruiting Player Platform
-          </p>
+            <p className="app-subtitle">
+              Official Recruiting Player Platform
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    )}
 
     <Navbar
       handleLogout={handleLogout}
-      clearMessage={() => setMessage("")}
-      message={message}
-      playerName={player?.name || ""}
+      playerName={player?.name}
       approvedPlayerCount={approvedPlayers.length}
+      compact={isPrivateDashboardPage}
     />
   </>
 )}
@@ -1041,6 +897,7 @@ const loadAllPlayers = async () => {
   element={<PlayerDetailPage approvedPlayers={approvedPlayers} useSlug={true} />}
 />
       </Routes>
+      {!isPrivateDashboardPage && (
       <footer className="site-footer">
   <div className="site-footer-inner">
     <h3 className="site-footer-title">Chapin Husky Football</h3>
@@ -1048,6 +905,7 @@ const loadAllPlayers = async () => {
     <p className="site-footer-copy">© 2026 Chapin Husky Football. All rights reserved.</p>
   </div>
 </footer>
+      )}
     </div>
   );
 }
