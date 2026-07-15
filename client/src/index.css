@@ -3757,3 +3757,300 @@ input, select {
     grid-column: auto;
   }
 }
+/* PLAYER ACTIVITY TIMESTAMPS */
+.profile-activity-card {
+  margin: 0 0 14px;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #d7e3ef;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(8, 47, 95, 0.06);
+}
+
+.profile-activity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.profile-activity-header h3,
+.profile-activity-header p { margin: 0; }
+
+.profile-activity-kicker {
+  margin-bottom: 3px !important;
+  color: #5d8fc6;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.profile-activity-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.profile-activity-grid,
+.admin-activity-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.profile-activity-grid > div,
+.admin-activity-summary > div {
+  position: relative;
+  min-width: 0;
+  padding: 10px 12px 10px 15px;
+  background: #f8fbfe;
+  border: 1px solid #e0e9f2;
+  border-radius: 10px;
+}
+
+.profile-activity-grid > div::before,
+.admin-activity-summary > div::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 7px;
+  width: 3px;
+  border-radius: 999px;
+  background: #9aaabc;
+}
+
+.profile-activity-grid span,
+.admin-activity-summary span {
+  display: block;
+  margin-bottom: 4px;
+  color: #6d7f93;
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.profile-activity-grid strong,
+.admin-activity-summary strong {
+  display: block;
+  color: #0b2d5c;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.activity-fresh::before { background: #22a06b !important; }
+.activity-aging::before { background: #d9a600 !important; }
+.activity-stale::before { background: #c83a3a !important; }
+.activity-neutral::before { background: #8da0b4 !important; }
+
+.admin-player-last-update {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+  color: #6c7f93;
+  font-size: 0.68rem;
+  font-weight: 750;
+  line-height: 1.25;
+}
+
+.admin-player-last-update .activity-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: #8da0b4;
+}
+
+.admin-player-last-update.activity-fresh .activity-dot { background: #22a06b; }
+.admin-player-last-update.activity-aging .activity-dot { background: #d9a600; }
+.admin-player-last-update.activity-stale .activity-dot { background: #c83a3a; }
+
+.admin-activity-summary { margin-bottom: 16px; }
+
+@media (max-width: 720px) {
+  .profile-activity-card { padding: 12px; }
+
+  .profile-activity-grid,
+  .admin-activity-summary {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .profile-activity-grid > div,
+  .admin-activity-summary > div {
+    padding: 8px 10px 8px 14px;
+  }
+
+  .admin-player-last-update { font-size: 0.62rem; }
+}
+/* =========================================
+   INLINE PROFILE ACTIVITY
+   Paste at the very bottom of index.css
+========================================= */
+
+.player-dashboard-top-row {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(620px, 1.6fr);
+  align-items: center;
+  gap: 24px;
+  margin: 4px 0 12px;
+}
+
+.player-dashboard-top-row .private-dashboard-heading {
+  margin: 0;
+}
+
+.profile-activity-inline {
+  display: grid;
+  grid-template-columns:
+    auto
+    minmax(140px, 1fr)
+    minmax(140px, 1fr)
+    minmax(130px, 0.9fr)
+    auto;
+  align-items: center;
+  gap: 0;
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.profile-activity-inline-label {
+  padding-right: 18px;
+  color: #5d8fc6;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.profile-activity-inline > div {
+  position: relative;
+  min-width: 0;
+  padding: 2px 16px;
+  border-left: 1px solid #c9d8e8;
+}
+
+.profile-activity-inline > div::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: -2px;
+  width: 3px;
+  border-radius: 999px;
+  background: #8da0b4;
+}
+
+.profile-activity-inline > div.activity-fresh::before {
+  background: #22a06b;
+}
+
+.profile-activity-inline > div.activity-aging::before {
+  background: #d9a600;
+}
+
+.profile-activity-inline > div.activity-stale::before {
+  background: #c83a3a;
+}
+
+.profile-activity-inline > div.activity-neutral::before {
+  background: #8da0b4;
+}
+
+.profile-activity-inline > div span {
+  display: block;
+  margin-bottom: 2px;
+  color: #6d7f93;
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.profile-activity-inline > div strong {
+  display: block;
+  color: #0b2d5c;
+  font-size: 0.78rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.profile-activity-inline .profile-activity-status {
+  justify-self: end;
+  margin-left: 12px;
+  padding: 5px 9px;
+  font-size: 0.66rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+  .player-dashboard-top-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .profile-activity-inline {
+    grid-template-columns:
+      auto
+      repeat(3, minmax(120px, 1fr))
+      auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .player-dashboard-top-row {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .profile-activity-inline {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 7px 8px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid #d7e3ef;
+    border-radius: 10px;
+    scrollbar-width: thin;
+  }
+
+  .profile-activity-inline-label {
+    padding-right: 4px;
+    flex: 0 0 auto;
+    font-size: 0.62rem;
+  }
+
+  .profile-activity-inline > div {
+    flex: 0 0 auto;
+    min-width: 125px;
+    padding: 0 10px;
+  }
+
+  .profile-activity-inline > div span {
+    font-size: 0.58rem;
+  }
+
+  .profile-activity-inline > div strong {
+    font-size: 0.7rem;
+  }
+
+  .profile-activity-inline .profile-activity-status {
+    flex: 0 0 auto;
+    margin-left: 0;
+  }
+}

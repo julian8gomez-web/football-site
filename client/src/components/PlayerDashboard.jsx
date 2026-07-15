@@ -62,6 +62,31 @@ const secondaryPositionOptions =
     : footballPositions.filter(
         (position) => position !== formData.position1
       );
+
+const formatActivityDate = (dateValue) => {
+  if (!dateValue) return "Not recorded yet";
+
+  return new Date(dateValue).toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  });
+};
+
+const getFreshnessClass = (dateValue) => {
+  if (!dateValue) return "activity-neutral";
+
+  const ageInDays =
+    (Date.now() - new Date(dateValue).getTime()) /
+    (1000 * 60 * 60 * 24);
+
+  if (ageInDays <= 7) return "activity-fresh";
+  if (ageInDays <= 30) return "activity-aging";
+  return "activity-stale";
+};
+
 useEffect(() => {
   loadMyProfile();
 }, []);
@@ -85,9 +110,48 @@ useEffect(() => {
       id="player-dashboard-workspace"
       className="private-dashboard-workspace player-dashboard-workspace"
     >
-      <div className="private-dashboard-heading">
-        <h2 className="section-title">Player Dashboard</h2>
-        <p>Update your recruiting profile and season information.</p>
+      <div className="player-dashboard-top-row">
+        <div className="private-dashboard-heading">
+          <h2 className="section-title">Player Dashboard</h2>
+          <p>Update your recruiting profile and season information.</p>
+        </div>
+
+        {player && (
+          <section className="profile-activity-inline" aria-label="Profile activity">
+            <span className="profile-activity-inline-label">
+              Profile Activity
+            </span>
+
+            <div className={getFreshnessClass(player.lastSubmittedAt)}>
+              <span>Last Submitted</span>
+              <strong>{formatActivityDate(player.lastSubmittedAt)}</strong>
+            </div>
+
+            <div className={getFreshnessClass(player.lastApprovedAt)}>
+              <span>Last Approved</span>
+              <strong>{formatActivityDate(player.lastApprovedAt)}</strong>
+            </div>
+
+            <div className="activity-neutral">
+              <span>Approved By</span>
+              <strong>{player.lastApprovedBy || "Not recorded yet"}</strong>
+            </div>
+
+            <span
+              className={`profile-activity-status ${
+                player.status === "pending"
+                  ? "status-pending"
+                  : player.status === "approved"
+                  ? "status-approved"
+                  : "status-rejected"
+              }`}
+            >
+              {player.status === "pending"
+                ? "Pending Review"
+                : player.status || "Unknown"}
+            </span>
+          </section>
+        )}
       </div>
 
       {!player && (

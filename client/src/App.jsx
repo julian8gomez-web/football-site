@@ -48,6 +48,7 @@ const [adminStatusFilter, setAdminStatusFilter] = useState("");
 const [adminPositionFilter, setAdminPositionFilter] = useState("");
 const [adminClassFilter, setAdminClassFilter] = useState("");
 const [newPassword, setNewPassword] = useState("");
+const [profileBaseline, setProfileBaseline] = useState(null);
 
  const [formData, setFormData] = useState({
   name: "",
@@ -56,6 +57,8 @@ const [newPassword, setNewPassword] = useState("");
   position2: "",
   playerClass: "",
   height: "",
+  heightFeet: "",
+  heightInches: "",
   weight: "",
   jerseyNumber: "",
   location: "",
@@ -66,6 +69,9 @@ const [newPassword, setNewPassword] = useState("");
   ncaaId: "",
   phoneNumber: "",
   emailAddress: "",
+  collegeOffers: "",
+  campsAttended: "",
+  collegesOfInterest: "",
   gpa: "",
   fortyTime: "",
   vertical: "",
@@ -75,37 +81,47 @@ const [newPassword, setNewPassword] = useState("");
   benchMax: "",
   cleanMax: "",
   squatMax: "",
+  passingCompletions: "",
+  passingAttempts: "",
   passingYards: "",
+  passingTouchdowns: "",
+  interceptionsThrown: "",
+  carries: "",
   rushingYards: "",
+  rushingTouchdowns: "",
+  receptions: "",
+  receivingYards: "",
+  receivingTouchdowns: "",
+  kickoffReturns: "",
+  kickoffReturnYards: "",
+  puntReturns: "",
+  puntReturnYards: "",
+  fieldGoalsMade: "",
+  fieldGoalsAttempted: "",
+  longestFieldGoal: "",
+  extraPointsMade: "",
+  extraPointsAttempted: "",
+  kickoffs: "",
+  touchbacks: "",
+  punts: "",
+  puntYards: "",
+  longestPunt: "",
+  puntsInside20: "",
+  fairCatchesForced: "",
+  pancakeBlocks: "",
+  sacksAllowed: "",
+  gamesStarted: "",
+  soloTackles: "",
+  tackleAssists: "",
   tackles: "",
+  tacklesForLoss: "",
   sacks: "",
   interceptions: "",
-  touchdowns: "",
-  // QB Stats
-passingCompletions: "",
-passingAttempts: "",
-passingTouchdowns: "",
-interceptionsThrown: "",
-
-// RB Stats
-carries: "",
-rushingTouchdowns: "",
-
-// WR / TE Stats
-receptions: "",
-receivingYards: "",
-receivingTouchdowns: "",
-
-// OL Stats
-pancakeBlocks: "",
-sacksAllowed: "",
-gamesStarted: "",
-
-// Defensive Stats
-tacklesForLoss: "",
-passBreakups: "",
-forcedFumbles: "",
-qbHurries: "",
+  passBreakups: "",
+  forcedFumbles: "",
+  fumbleRecoveries: "",
+  qbHurries: "",
+  touchdowns: ""
 });
 
 useEffect(() => {
@@ -230,6 +246,7 @@ const filteredPendingPlayers = pendingPlayers.filter((player) => {
   localStorage.removeItem("role");
   localStorage.removeItem("displayName");
   setPlayer(null);
+  setProfileBaseline(null);
   setPendingPlayers([]);
   setMessage("Logged out ✅");
   navigate("/login");
@@ -276,6 +293,78 @@ localStorage.setItem(
     }
   };
 
+  const seasonStatFields = [
+    "passingCompletions",
+    "passingAttempts",
+    "passingYards",
+    "passingTouchdowns",
+    "interceptionsThrown",
+    "carries",
+    "rushingYards",
+    "rushingTouchdowns",
+    "receptions",
+    "receivingYards",
+    "receivingTouchdowns",
+    "kickoffReturns",
+    "kickoffReturnYards",
+    "puntReturns",
+    "puntReturnYards",
+    "fieldGoalsMade",
+    "fieldGoalsAttempted",
+    "longestFieldGoal",
+    "extraPointsMade",
+    "extraPointsAttempted",
+    "kickoffs",
+    "touchbacks",
+    "punts",
+    "puntYards",
+    "longestPunt",
+    "puntsInside20",
+    "fairCatchesForced",
+    "pancakeBlocks",
+    "sacksAllowed",
+    "gamesStarted",
+    "soloTackles",
+    "tackleAssists",
+    "tackles",
+    "tacklesForLoss",
+    "sacks",
+    "interceptions",
+    "passBreakups",
+    "forcedFumbles",
+    "fumbleRecoveries",
+    "qbHurries",
+    "touchdowns"
+  ];
+
+  const recruitingArrayFields = [
+    "collegeOffers",
+    "campsAttended",
+    "collegesOfInterest"
+  ];
+
+  const parseMeasurement = (value) => {
+    if (!value) {
+      return { feet: "", inches: "" };
+    }
+
+    const match = String(value).match(/(\d+)'?\s*(\d+)?/);
+
+    return {
+      feet: match?.[1] || "",
+      inches: match?.[2] || ""
+    };
+  };
+
+  const valueForInput = (value) =>
+    value === undefined || value === null ? "" : String(value);
+
+  const arraysToTextarea = (value) =>
+    Array.isArray(value) ? value.join("\\n") : "";
+
+  const normalizeFormValue = (value) =>
+    value === undefined || value === null ? "" : String(value);
+
   const loadMyProfile = async () => {
     const token = localStorage.getItem("token");
 
@@ -285,103 +374,148 @@ localStorage.setItem(
     }
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/my-profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/my-profile`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      });
+      );
 
       const data = await res.json();
 
-      if (res.ok) {
-        setPlayer(data);
-        let broadJumpFeet = "";
-let broadJumpInches = "";
-
-if (data.broadJump) {
-  const match = data.broadJump.match(/(\d+)'?\s*(\d+)?/);
-
-  if (match) {
-    broadJumpFeet = match[1] || "";
-    broadJumpInches = match[2] || "";
-  }
-}
-let heightFeet = "";
-let heightInches = "";
-
-if (data.height) {
-  const match = data.height.match(/(\d+)'?\s*(\d+)?/);
-
-  if (match) {
-    heightFeet = match[1] || "";
-    heightInches = match[2] || "";
-  }
-}
-        setFormData({
-          name: data.name || "",
-          position: data.position || "",
-          position1: data.position1 || (data.position ? data.position.split("/")[0] || "" : ""),
-          position2: data.position2 || (data.position ? data.position.split("/")[1] || "" : ""),
-          playerClass: data.playerClass || "",
-          height: data.height || "",
-          heightFeet,
-          heightInches,
-          weight: data.weight || "",
-          jerseyNumber: data.jerseyNumber || "",
-          location: data.location || "",
-          hudlLink: data.hudlLink || "",
-          contactInfo: data.contactInfo || "",
-          profilePicture: data.profilePicture || "",
-          gpa: data.gpa || "",
-          fortyTime: data.fortyTime || "",
-          vertical: data.vertical || "",
-          broadJump: data.broadJump || "",
-          broadJumpFeet,
-          broadJumpInches,
-          benchMax: data.benchMax || "",
-          cleanMax: data.cleanMax || "",
-          squatMax: data.squatMax || "",
-          passingYards: data.passingYards || "",
-          rushingYards: data.rushingYards || "",
-          tackles: data.tackles || "",
-          sacks: data.sacks || "",
-          interceptions: data.interceptions || "",
-          touchdowns: data.touchdowns || "",
-          // QB Stats
-          passingCompletions: data.passingCompletions || "",
-          passingAttempts: data.passingAttempts || "",
-          passingTouchdowns: data.passingTouchdowns || "",
-          interceptionsThrown: data.interceptionsThrown || "",
-
-// RB Stats
-          carries: data.carries || "",
-          rushingTouchdowns: data.rushingTouchdowns || "",
-
-// WR / TE Stats
-          receptions: data.receptions || "",
-          receivingYards: data.receivingYards || "",
-          receivingTouchdowns: data.receivingTouchdowns || "",
-
-// OL Stats
-          pancakeBlocks: data.pancakeBlocks || "",
-          sacksAllowed: data.sacksAllowed || "",
-          gamesStarted: data.gamesStarted || "",
-
-// Defensive Stats
-          tacklesForLoss: data.tacklesForLoss || "",
-          passBreakups: data.passBreakups || "",
-          forcedFumbles: data.forcedFumbles || "",
-          qbHurries: data.qbHurries || "",
-          twitter: data.twitter || "",
-          ncaaId: data.ncaaId || "",
-          phoneNumber: data.phoneNumber || "",
-          emailAddress: data.emailAddress || "",
-        });
-        setMessage("Profile loaded ✅");
-      } else {
+      if (!res.ok) {
         setMessage(data.error || "Could not load profile");
+        return;
       }
+
+      const currentSeasonStats =
+        Array.isArray(data.seasonStats)
+          ? data.seasonStats.find((season) => season.isCurrent) ||
+            data.seasonStats[0] ||
+            {}
+          : {};
+
+      const pendingUpdates = data.pendingUpdates || {};
+      const pendingSeasonStats =
+        pendingUpdates.currentSeasonStats?.stats || {};
+
+      const approvedHeight = parseMeasurement(data.height);
+      const approvedBroadJump = parseMeasurement(data.broadJump);
+
+      const mergedHeight =
+        pendingUpdates.height !== undefined
+          ? parseMeasurement(pendingUpdates.height)
+          : approvedHeight;
+
+      const mergedBroadJump =
+        pendingUpdates.broadJump !== undefined
+          ? parseMeasurement(pendingUpdates.broadJump)
+          : approvedBroadJump;
+
+      const loadedForm = {
+        name: valueForInput(
+          pendingUpdates.name ?? data.name
+        ),
+        position: valueForInput(
+          pendingUpdates.position ?? data.position
+        ),
+        position1: valueForInput(
+          pendingUpdates.position1 ??
+            data.position1 ??
+            data.position?.split("/")?.[0]
+        ),
+        position2: valueForInput(
+          pendingUpdates.position2 ??
+            data.position2 ??
+            data.position?.split("/")?.[1]
+        ),
+        playerClass: valueForInput(
+          pendingUpdates.playerClass ?? data.playerClass
+        ),
+        height: valueForInput(
+          pendingUpdates.height ?? data.height
+        ),
+        heightFeet: mergedHeight.feet,
+        heightInches: mergedHeight.inches,
+        weight: valueForInput(
+          pendingUpdates.weight ?? data.weight
+        ),
+        jerseyNumber: valueForInput(
+          pendingUpdates.jerseyNumber ?? data.jerseyNumber
+        ),
+        location: valueForInput(
+          pendingUpdates.location ?? data.location
+        ),
+        hudlLink: valueForInput(
+          pendingUpdates.hudlLink ?? data.hudlLink
+        ),
+        contactInfo: valueForInput(
+          pendingUpdates.contactInfo ?? data.contactInfo
+        ),
+        profilePicture: valueForInput(data.profilePicture),
+        twitter: valueForInput(
+          pendingUpdates.twitter ?? data.twitter
+        ),
+        ncaaId: valueForInput(
+          pendingUpdates.ncaaId ?? data.ncaaId
+        ),
+        phoneNumber: valueForInput(
+          pendingUpdates.phoneNumber ?? data.phoneNumber
+        ),
+        emailAddress: valueForInput(
+          pendingUpdates.emailAddress ?? data.emailAddress
+        ),
+        collegeOffers: arraysToTextarea(
+          pendingUpdates.collegeOffers ?? data.collegeOffers
+        ),
+        campsAttended: arraysToTextarea(
+          pendingUpdates.campsAttended ?? data.campsAttended
+        ),
+        collegesOfInterest: arraysToTextarea(
+          pendingUpdates.collegesOfInterest ??
+            data.collegesOfInterest
+        ),
+        gpa: valueForInput(
+          pendingUpdates.gpa ?? data.gpa
+        ),
+        fortyTime: valueForInput(
+          pendingUpdates.fortyTime ?? data.fortyTime
+        ),
+        vertical: valueForInput(
+          pendingUpdates.vertical ?? data.vertical
+        ),
+        broadJump: valueForInput(
+          pendingUpdates.broadJump ?? data.broadJump
+        ),
+        broadJumpFeet: mergedBroadJump.feet,
+        broadJumpInches: mergedBroadJump.inches,
+        benchMax: valueForInput(
+          pendingUpdates.benchMax ?? data.benchMax
+        ),
+        cleanMax: valueForInput(
+          pendingUpdates.cleanMax ?? data.cleanMax
+        ),
+        squatMax: valueForInput(
+          pendingUpdates.squatMax ?? data.squatMax
+        )
+      };
+
+      for (const field of seasonStatFields) {
+        loadedForm[field] = valueForInput(
+          pendingSeasonStats[field] ??
+            currentSeasonStats[field] ??
+            data[field]
+        );
+      }
+
+      setPlayer(data);
+      setFormData(loadedForm);
+      setProfileBaseline(loadedForm);
+      setMessage("Profile loaded ✅");
     } catch (err) {
+      console.error("Load profile error:", err);
       setMessage("Error loading profile");
     }
   };
@@ -394,93 +528,176 @@ if (data.height) {
   };
 
   const handleUpdateProfile = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  const payload = {
-    name: formData.name,
-    position:
-      formData.position1 && formData.position2
-        ? `${formData.position1}/${formData.position2}`
-        : formData.position1 || "",
-    position1: formData.position1,
-    position2: formData.position2,
-    playerClass: formData.playerClass,
-    height:
-  formData.heightFeet || formData.heightInches
-    ? `${formData.heightFeet || 0}' ${formData.heightInches || 0}"`
-    : "",
-    weight: formData.weight,
-    jerseyNumber: formData.jerseyNumber,
-    location: "El Paso, TX",
-    hudlLink: formData.hudlLink,
-    contactInfo: formData.contactInfo,
-    twitter: formData.twitter,
-    ncaaId: formData.ncaaId,
-    phoneNumber: formData.phoneNumber,
-    emailAddress: formData.emailAddress,
-    gpa: formData.gpa,
-    fortyTime: formData.fortyTime,
-    vertical: formData.vertical,
-    broadJump:
-  formData.broadJumpFeet || formData.broadJumpInches
-    ? `${formData.broadJumpFeet || 0}' ${formData.broadJumpInches || 0}"`
-    : "",
+    if (!token) {
+      setMessage("No token found. Please log in again.");
+      return;
+    }
 
-    benchMax: formData.benchMax === "" ? null : Number(formData.benchMax),
-    cleanMax: formData.cleanMax === "" ? null : Number(formData.cleanMax),
-    squatMax: formData.squatMax === "" ? null : Number(formData.squatMax),
+    if (!profileBaseline) {
+      setMessage("Profile is still loading. Please try again.");
+      return;
+    }
 
-    passingYards: formData.passingYards === "" ? null : Number(formData.passingYards),
-    rushingYards: formData.rushingYards === "" ? null : Number(formData.rushingYards),
-    tackles: formData.tackles === "" ? null : Number(formData.tackles),
-    sacks: formData.sacks === "" ? null : Number(formData.sacks),
-    interceptions: formData.interceptions === "" ? null : Number(formData.interceptions),
-    touchdowns: formData.touchdowns === "" ? null : Number(formData.touchdowns),
+    const currentValues = {
+      ...formData,
+      position:
+        formData.position1 && formData.position2
+          ? `${formData.position1}/${formData.position2}`
+          : formData.position1 || "",
+      height:
+        formData.heightFeet || formData.heightInches
+          ? `${formData.heightFeet || 0}' ${formData.heightInches || 0}"`
+          : "",
+      broadJump:
+        formData.broadJumpFeet || formData.broadJumpInches
+          ? `${formData.broadJumpFeet || 0}' ${formData.broadJumpInches || 0}"`
+          : "",
+      location: "El Paso, TX"
+    };
 
-    passingCompletions: formData.passingCompletions === "" ? null : Number(formData.passingCompletions),
-    passingAttempts: formData.passingAttempts === "" ? null : Number(formData.passingAttempts),
-    passingTouchdowns: formData.passingTouchdowns === "" ? null : Number(formData.passingTouchdowns),
-    interceptionsThrown: formData.interceptionsThrown === "" ? null : Number(formData.interceptionsThrown),
+    const baselineValues = {
+      ...profileBaseline,
+      position:
+        profileBaseline.position1 && profileBaseline.position2
+          ? `${profileBaseline.position1}/${profileBaseline.position2}`
+          : profileBaseline.position1 || "",
+      height:
+        profileBaseline.heightFeet ||
+        profileBaseline.heightInches
+          ? `${profileBaseline.heightFeet || 0}' ${
+              profileBaseline.heightInches || 0
+            }"`
+          : "",
+      broadJump:
+        profileBaseline.broadJumpFeet ||
+        profileBaseline.broadJumpInches
+          ? `${profileBaseline.broadJumpFeet || 0}' ${
+              profileBaseline.broadJumpInches || 0
+            }"`
+          : "",
+      location: "El Paso, TX"
+    };
 
-    carries: formData.carries === "" ? null : Number(formData.carries),
-    rushingTouchdowns: formData.rushingTouchdowns === "" ? null : Number(formData.rushingTouchdowns),
+    const payload = {};
 
-    receptions: formData.receptions === "" ? null : Number(formData.receptions),
-    receivingYards: formData.receivingYards === "" ? null : Number(formData.receivingYards),
-    receivingTouchdowns: formData.receivingTouchdowns === "" ? null : Number(formData.receivingTouchdowns),
+    const profileFields = [
+      "name",
+      "position",
+      "position1",
+      "position2",
+      "playerClass",
+      "height",
+      "weight",
+      "jerseyNumber",
+      "location",
+      "hudlLink",
+      "contactInfo",
+      "twitter",
+      "ncaaId",
+      "phoneNumber",
+      "emailAddress",
+      "collegeOffers",
+      "campsAttended",
+      "collegesOfInterest",
+      "gpa",
+      "fortyTime",
+      "vertical",
+      "broadJump",
+      "benchMax",
+      "cleanMax",
+      "squatMax"
+    ];
 
-    pancakeBlocks: formData.pancakeBlocks === "" ? null : Number(formData.pancakeBlocks),
-    sacksAllowed: formData.sacksAllowed === "" ? null : Number(formData.sacksAllowed),
-    gamesStarted: formData.gamesStarted === "" ? null : Number(formData.gamesStarted),
+    for (const field of profileFields) {
+      const currentValue = normalizeFormValue(
+        currentValues[field]
+      );
 
-    tacklesForLoss: formData.tacklesForLoss === "" ? null : Number(formData.tacklesForLoss),
-    passBreakups: formData.passBreakups === "" ? null : Number(formData.passBreakups),
-    forcedFumbles: formData.forcedFumbles === "" ? null : Number(formData.forcedFumbles),
-    qbHurries: formData.qbHurries === "" ? null : Number(formData.qbHurries)
+      const baselineValue = normalizeFormValue(
+        baselineValues[field]
+      );
+
+      if (currentValue === baselineValue) {
+        continue;
+      }
+
+      if (recruitingArrayFields.includes(field)) {
+        payload[field] = currentValue
+          .split(/\r?\n/)
+          .map((item) => item.trim())
+          .filter(Boolean);
+      } else if (
+        ["benchMax", "cleanMax", "squatMax"].includes(field)
+      ) {
+        payload[field] =
+          currentValue === "" ? null : Number(currentValue);
+      } else {
+        payload[field] = currentValue;
+      }
+    }
+
+    for (const field of seasonStatFields) {
+      const currentValue = normalizeFormValue(
+        currentValues[field]
+      );
+
+      const baselineValue = normalizeFormValue(
+        baselineValues[field]
+      );
+
+      if (currentValue === baselineValue) {
+        continue;
+      }
+
+      // Critical frontend safety:
+      // blank football fields are never submitted.
+      if (currentValue === "") {
+        continue;
+      }
+
+      payload[field] = Number(currentValue);
+    }
+
+    if (Object.keys(payload).length === 0) {
+      setMessage("No new changes to submit.");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/my-profile`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage(data.error || "Update failed");
+        return;
+      }
+
+      setPlayer(data.player);
+      setProfileBaseline({ ...currentValues });
+      setMessage(
+        data.message ||
+          "Profile changes submitted for review ✅"
+      );
+    } catch (err) {
+      console.error("Update profile error:", err);
+      setMessage("Error updating profile");
+    }
   };
-
-  console.log("PAYLOAD SENT:", payload);
-
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/my-profile`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify(payload)
-  });
-
-  const data = await res.json();
-
-  if (res.ok) {
-    setPlayer(data.player);
-    setMessage(data.message || "Profile changes submitted for review ✅");
-  } else {
-    setMessage(data.error || "Update failed");
-  }
-};
 
   const handleImageUpload = async () => {
   const token = localStorage.getItem("token");
@@ -511,8 +728,12 @@ if (data.height) {
 
     if (res.ok) {
       setPlayer(data.player);
-      setMessage(data.message || "Profile picture submitted for review ✅");
+      setMessage(
+        data.message ||
+          "Profile picture submitted for review ✅"
+      );
       setSelectedImage(null);
+      await loadMyProfile();
     } else {
       setMessage(data.error || "Image upload failed");
     }

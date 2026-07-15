@@ -22,7 +22,38 @@ const [showSeasonConfirm, setShowSeasonConfirm] = useState(false);
 const [seasonConfirmText, setSeasonConfirmText] = useState("");
 const [expandedPlayers, setExpandedPlayers] = useState({});
 const [showAllPlayers, setShowAllPlayers] = useState(false);
-const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+const formatActivityDate = (dateValue) => {
+  if (!dateValue) return "Not recorded";
+
+  return new Date(dateValue).toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  });
+};
+
+const getFreshnessInfo = (dateValue) => {
+  if (!dateValue) {
+    return { label: "No update recorded", className: "activity-neutral" };
+  }
+
+  const ageInDays =
+    (Date.now() - new Date(dateValue).getTime()) /
+    (1000 * 60 * 60 * 24);
+
+  if (ageInDays <= 7) {
+    return { label: "Updated recently", className: "activity-fresh" };
+  }
+
+  if (ageInDays <= 30) {
+    return { label: "Update aging", className: "activity-aging" };
+  }
+
+  return { label: "Update overdue", className: "activity-stale" };
+};
 
 const togglePlayerChanges = (playerId) => {
   setExpandedPlayers((current) => ({
@@ -303,31 +334,16 @@ const nextSeasonLabel = nextSeasonStartYear
 
       <section className="admin-player-panel">
         <div className="admin-player-panel-header">
-          <div className="admin-player-panel-title-row">
-            <div>
-              <h3>{showAllPlayers ? "All Players" : "Pending Players"}</h3>
-              <p>
-                {showAllPlayers
-                  ? "Search and filter the full player list."
-                  : "Players awaiting profile approval or update review."}
-              </p>
-            </div>
-
-            <button
-              type="button"
-              className="admin-mobile-filter-toggle"
-              onClick={() => setShowMobileFilters((current) => !current)}
-              aria-expanded={showMobileFilters}
-            >
-              {showMobileFilters ? "Hide Filters ▲" : "Filters ▼"}
-            </button>
+          <div>
+            <h3>{showAllPlayers ? "All Players" : "Pending Players"}</h3>
+            <p>
+              {showAllPlayers
+                ? "Search and filter the full player list."
+                : "Players awaiting profile approval or update review."}
+            </p>
           </div>
 
-          <div
-            className={`admin-filter-row ${
-              showMobileFilters ? "mobile-filters-open" : ""
-            }`}
-          >
+          <div className="admin-filter-row">
             <input
               type="text"
               placeholder="Search players..."
@@ -404,16 +420,32 @@ const nextSeasonLabel = nextSeasonStartYear
                     </div>
                     <div>
                       <strong>{p.name}</strong>
-                      <small>{positionText}{p.jerseyNumber ? ` #${p.jerseyNumber}` : ""}</small>
+                      <small>
+                        {positionText}
+                        {p.jerseyNumber ? ` #${p.jerseyNumber}` : ""}
+                      </small>
+
+                      {(() => {
+                        const freshness = getFreshnessInfo(
+                          p.lastSubmittedAt || p.lastApprovedAt
+                        );
+
+                        return (
+                          <span
+                            className={`admin-player-last-update ${freshness.className}`}
+                          >
+                            <span className="activity-dot" />
+                            {p.lastSubmittedAt
+                              ? `Submitted ${formatActivityDate(p.lastSubmittedAt)}`
+                              : p.lastApprovedAt
+                              ? `Approved ${formatActivityDate(p.lastApprovedAt)}`
+                              : freshness.label}
+                          </span>
+                        );
+                      })()}
                     </div>
                   </div>
-                  <div
-                    className={`admin-player-cell admin-player-email ${
-                      p.emailAddress || p.email ? "" : "empty-email"
-                    }`}
-                  >
-                    <span>{p.emailAddress || p.email || "Not provided"}</span>
-                  </div>
+                  <div className="admin-player-cell admin-player-email"><span>{p.emailAddress || p.email || "Not provided"}</span></div>
                   <div className="admin-player-cell"><span className="admin-class-badge">{p.playerClass || "N/A"}</span></div>
                   <div className="admin-player-cell"><span className={`admin-status-badge status-${p.status || "unknown"}`}>{p.status || "unknown"}</span></div>
                   <div className="admin-player-cell"><span className="admin-change-count">{changeCount}</span></div>
@@ -430,6 +462,23 @@ const nextSeasonLabel = nextSeasonStartYear
                 </div>
                 {isExpanded && (
                   <div className="admin-table-expanded">
+                    <div className="admin-activity-summary">
+                      <div>
+                        <span>Last Submitted</span>
+                        <strong>{formatActivityDate(p.lastSubmittedAt)}</strong>
+                      </div>
+
+                      <div>
+                        <span>Last Approved</span>
+                        <strong>{formatActivityDate(p.lastApprovedAt)}</strong>
+                      </div>
+
+                      <div>
+                        <span>Approved By</span>
+                        <strong>{p.lastApprovedBy || "Not recorded"}</strong>
+                      </div>
+                    </div>
+
                     {effectiveChanges.length > 0 ? (
                       <>
                         <h4>Requested Changes</h4>

@@ -1,7 +1,87 @@
 const mongoose = require("mongoose");
 
+const seasonStatsSchema = new mongoose.Schema(
+  {
+    season: {
+      type: String,
+      required: true
+    },
+
+    isCurrent: {
+      type: Boolean,
+      default: false
+    },
+
+    isLocked: {
+      type: Boolean,
+      default: false
+    },
+
+    // QB Stats
+    passingCompletions: Number,
+    passingAttempts: Number,
+    passingYards: Number,
+    passingTouchdowns: Number,
+    interceptionsThrown: Number,
+
+    // RB Stats
+    carries: Number,
+    rushingYards: Number,
+    rushingTouchdowns: Number,
+
+    // WR / TE Stats
+    receptions: Number,
+    receivingYards: Number,
+    receivingTouchdowns: Number,
+
+    // Special Teams Return Stats
+    kickoffReturns: Number,
+    kickoffReturnYards: Number,
+    puntReturns: Number,
+    puntReturnYards: Number,
+
+    // Kicker Stats
+    fieldGoalsMade: Number,
+    fieldGoalsAttempted: Number,
+    longestFieldGoal: Number,
+    extraPointsMade: Number,
+    extraPointsAttempted: Number,
+    kickoffs: Number,
+    touchbacks: Number,
+
+    // Punter Stats
+    punts: Number,
+    puntYards: Number,
+    longestPunt: Number,
+    puntsInside20: Number,
+    fairCatchesForced: Number,
+
+    // OL Stats
+    pancakeBlocks: Number,
+    sacksAllowed: Number,
+    gamesStarted: Number,
+
+    // Defense
+    soloTackles: Number,
+    tackleAssists: Number,
+    tackles: Number,
+    tacklesForLoss: Number,
+    sacks: Number,
+    interceptions: Number,
+    passBreakups: Number,
+    forcedFumbles: Number,
+    fumbleRecoveries: Number,
+    qbHurries: Number,
+
+    // General / all-purpose
+    touchdowns: Number
+  },
+  { _id: false }
+);
+
 const playerSchema = new mongoose.Schema({
   name: { type: String, required: true },
+
   slug: {
     type: String,
     unique: true,
@@ -30,10 +110,12 @@ const playerSchema = new mongoose.Schema({
     type: [String],
     default: []
   },
+
   campsAttended: {
     type: [String],
     default: []
   },
+
   collegesOfInterest: {
     type: [String],
     default: []
@@ -48,38 +130,25 @@ const playerSchema = new mongoose.Schema({
   cleanMax: Number,
   squatMax: Number,
 
-  // Football production stats
+  // Legacy top-level football fields kept for older records
   passingYards: Number,
   rushingYards: Number,
-
-  // Legacy total tackles field for older records
   tackles: Number,
-
   sacks: Number,
   interceptions: Number,
   touchdowns: Number,
-
-  // QB Stats
   passingCompletions: Number,
   passingAttempts: Number,
   passingTouchdowns: Number,
   interceptionsThrown: Number,
-
-  // RB Stats
   carries: Number,
   rushingTouchdowns: Number,
-
-  // WR / TE Stats
   receptions: Number,
   receivingYards: Number,
   receivingTouchdowns: Number,
-
-  // OL Stats
   pancakeBlocks: Number,
   sacksAllowed: Number,
   gamesStarted: Number,
-
-  // Defensive Stats
   soloTackles: Number,
   tackleAssists: Number,
   tacklesForLoss: Number,
@@ -87,14 +156,10 @@ const playerSchema = new mongoose.Schema({
   forcedFumbles: Number,
   fumbleRecoveries: Number,
   qbHurries: Number,
-
-  // Special Teams Return Stats
   kickoffReturns: Number,
   kickoffReturnYards: Number,
   puntReturns: Number,
   puntReturnYards: Number,
-
-  // Kicker Stats
   fieldGoalsMade: Number,
   fieldGoalsAttempted: Number,
   longestFieldGoal: Number,
@@ -102,94 +167,17 @@ const playerSchema = new mongoose.Schema({
   extraPointsAttempted: Number,
   kickoffs: Number,
   touchbacks: Number,
-
-  // Punter Stats
   punts: Number,
   puntYards: Number,
   longestPunt: Number,
   puntsInside20: Number,
   fairCatchesForced: Number,
 
-  seasonStats: [
-    {
-      season: {
-        type: String,
-        required: true
-      },
+  seasonStats: {
+    type: [seasonStatsSchema],
+    default: []
+  },
 
-      isCurrent: {
-        type: Boolean,
-        default: false
-      },
-
-      isLocked: {
-        type: Boolean,
-        default: false
-      },
-
-      // QB Stats
-      passingCompletions: Number,
-      passingAttempts: Number,
-      passingYards: Number,
-      passingTouchdowns: Number,
-      interceptionsThrown: Number,
-
-      // RB Stats
-      carries: Number,
-      rushingYards: Number,
-      rushingTouchdowns: Number,
-
-      // WR / TE Stats
-      receptions: Number,
-      receivingYards: Number,
-      receivingTouchdowns: Number,
-
-      // Special Teams Return Stats
-      kickoffReturns: Number,
-      kickoffReturnYards: Number,
-      puntReturns: Number,
-      puntReturnYards: Number,
-
-      // Kicker Stats
-      fieldGoalsMade: Number,
-      fieldGoalsAttempted: Number,
-      longestFieldGoal: Number,
-      extraPointsMade: Number,
-      extraPointsAttempted: Number,
-      kickoffs: Number,
-      touchbacks: Number,
-
-      // Punter Stats
-      punts: Number,
-      puntYards: Number,
-      longestPunt: Number,
-      puntsInside20: Number,
-      fairCatchesForced: Number,
-
-      // OL Stats
-      pancakeBlocks: Number,
-      sacksAllowed: Number,
-      gamesStarted: Number,
-
-      // Defense
-      soloTackles: Number,
-      tackleAssists: Number,
-
-      // Legacy total tackles fallback for older season records
-      tackles: Number,
-
-      tacklesForLoss: Number,
-      sacks: Number,
-      interceptions: Number,
-      passBreakups: Number,
-      forcedFumbles: Number,
-      fumbleRecoveries: Number,
-      qbHurries: Number,
-
-      // General / all-purpose
-      touchdowns: Number
-    }
-  ],
   // Profile activity tracking
   lastSubmittedAt: {
     type: Date,
@@ -206,10 +194,6 @@ const playerSchema = new mongoose.Schema({
     default: ""
   },
 
-  pendingUpdates: {
-    type: Object,
-    default: {}
-  },
   pendingUpdates: {
     type: Object,
     default: {}
