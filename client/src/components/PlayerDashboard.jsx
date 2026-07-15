@@ -62,6 +62,9 @@ const secondaryPositionOptions =
     : footballPositions.filter(
         (position) => position !== formData.position1
       );
+useEffect(() => {
+  loadMyProfile();
+}, []);
 
 useEffect(() => {
   if (!player || !workspaceRef.current) return;
