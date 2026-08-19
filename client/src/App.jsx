@@ -641,26 +641,37 @@ localStorage.setItem(
     }
 
     for (const field of seasonStatFields) {
-      const currentValue = normalizeFormValue(
-        currentValues[field]
-      );
+  const currentValue = normalizeFormValue(
+    currentValues[field]
+  );
 
-      const baselineValue = normalizeFormValue(
-        baselineValues[field]
-      );
+  const baselineValue = normalizeFormValue(
+    baselineValues[field]
+  );
 
-      if (currentValue === baselineValue) {
-        continue;
-      }
+  // No change = submit nothing.
+  if (currentValue === baselineValue) {
+    continue;
+  }
 
-      // Critical frontend safety:
-      // blank football fields are never submitted.
-      if (currentValue === "") {
-        continue;
-      }
-
-      payload[field] = Number(currentValue);
+  // If the field previously had a value and the player
+  // intentionally erased it, send null as a clear instruction.
+  if (currentValue === "") {
+    if (baselineValue !== "") {
+      payload[field] = null;
     }
+
+    continue;
+  }
+
+  const numericValue = Number(currentValue);
+
+  if (!Number.isFinite(numericValue)) {
+    continue;
+  }
+
+  payload[field] = numericValue;
+}
 
     if (Object.keys(payload).length === 0) {
       setMessage("No new changes to submit.");

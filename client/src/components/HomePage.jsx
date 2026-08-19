@@ -304,30 +304,59 @@ const positions = [
   .filter(Boolean)
   .map((pos) => pos.trim().toUpperCase());
 
-const currentSeasonStats =
-  Array.isArray(p.seasonStats)
-    ? p.seasonStats.find((season) => season.isCurrent) ||
-      p.seasonStats[0] ||
-      {}
-    : {};
+const careerStatValue = (field) => {
+  const seasons = Array.isArray(p.seasonStats)
+    ? p.seasonStats
+    : [];
 
-const getStatValue = (field) =>
-  currentSeasonStats[field] ?? p[field];
+  if (seasons.length > 0) {
+    return seasons.reduce((total, season) => {
+      const value = Number(season?.[field]);
+
+      return Number.isFinite(value)
+        ? total + value
+        : total;
+    }, 0);
+  }
+
+  return Number(p[field] || 0);
+};
 
 let featureLabel = "VERT";
 let featureValue = p.vertical ? `${p.vertical}"` : "N/A";
 
 if (positions.includes("QB")) {
   featureLabel = "PASS YDS";
-  featureValue = formatNumber(getStatValue("passingYards"));
+
+  const passingYards = careerStatValue("passingYards");
+
+  featureValue =
+    passingYards > 0
+      ? formatNumber(passingYards)
+      : "N/A";
 
 } else if (positions.includes("RB")) {
   featureLabel = "RUSH YDS";
-  featureValue = formatNumber(getStatValue("rushingYards"));
 
-} else if (positions.includes("WR") || positions.includes("TE")) {
+  const rushingYards = careerStatValue("rushingYards");
+
+  featureValue =
+    rushingYards > 0
+      ? formatNumber(rushingYards)
+      : "N/A";
+
+} else if (
+  positions.includes("WR") ||
+  positions.includes("TE")
+) {
   featureLabel = "REC YDS";
-  featureValue = formatNumber(getStatValue("receivingYards"));
+
+  const receivingYards = careerStatValue("receivingYards");
+
+  featureValue =
+    receivingYards > 0
+      ? formatNumber(receivingYards)
+      : "N/A";
 
 } else if (
   positions.includes("OL") ||
@@ -336,7 +365,13 @@ if (positions.includes("QB")) {
   positions.includes("C")
 ) {
   featureLabel = "PANCAKES";
-  featureValue = formatNumber(getStatValue("pancakeBlocks"));
+
+  const pancakeBlocks = careerStatValue("pancakeBlocks");
+
+  featureValue =
+    pancakeBlocks > 0
+      ? formatNumber(pancakeBlocks)
+      : "N/A";
 
 } else if (
   positions.includes("DE") ||
@@ -353,9 +388,14 @@ if (positions.includes("QB")) {
   positions.includes("FS") ||
   positions.includes("SS")
 ) {
-  const soloTackles = Number(getStatValue("soloTackles") || 0);
-  const tackleAssists = Number(getStatValue("tackleAssists") || 0);
-  const storedTackles = Number(getStatValue("tackles") || 0);
+  const soloTackles =
+    careerStatValue("soloTackles");
+
+  const tackleAssists =
+    careerStatValue("tackleAssists");
+
+  const storedTackles =
+    careerStatValue("tackles");
 
   const totalTackles =
     soloTackles > 0 || tackleAssists > 0
@@ -365,15 +405,15 @@ if (positions.includes("QB")) {
   const standoutStats = [
     {
       label: "SACKS",
-      value: Number(getStatValue("sacks") || 0)
+      value: careerStatValue("sacks")
     },
     {
       label: "PBU",
-      value: Number(getStatValue("passBreakups") || 0)
+      value: careerStatValue("passBreakups")
     },
     {
       label: "INT",
-      value: Number(getStatValue("interceptions") || 0)
+      value: careerStatValue("interceptions")
     }
   ];
 
@@ -386,6 +426,7 @@ if (positions.includes("QB")) {
     featureValue = formatNumber(standoutStat.value);
   } else {
     featureLabel = "TACKLES";
+
     featureValue =
       totalTackles > 0
         ? formatNumber(totalTackles)
@@ -396,15 +437,16 @@ if (positions.includes("QB")) {
   featureLabel = "ALL-PURP YDS";
 
   const totalYards =
-    Number(getStatValue("rushingYards") || 0) +
-    Number(getStatValue("receivingYards") || 0) +
-    Number(getStatValue("passingYards") || 0) +
-    Number(getStatValue("kickoffReturnYards") || 0) +
-    Number(getStatValue("puntReturnYards") || 0);
+    careerStatValue("rushingYards") +
+    careerStatValue("receivingYards") +
+    careerStatValue("passingYards") +
+    careerStatValue("kickoffReturnYards") +
+    careerStatValue("puntReturnYards");
 
-  featureValue = totalYards > 0
-    ? formatNumber(totalYards)
-    : "N/A";
+  featureValue =
+    totalYards > 0
+      ? formatNumber(totalYards)
+      : "N/A";
 }
             return (
               <div

@@ -336,23 +336,24 @@ app.put("/my-profile", authMiddleware, async (req, res) => {
 
       const rawValue = req.body[key];
 
-      // Critical safety rule:
-      // blank/null football fields never overwrite stored season stats.
-      if (
-        rawValue === "" ||
-        rawValue === null ||
-        rawValue === undefined
-      ) {
-        continue;
-      }
+// Undefined means the player did not submit this field.
+if (rawValue === undefined) {
+  continue;
+}
 
-      const numericValue = Number(rawValue);
+// Null is an intentional clear instruction.
+if (rawValue === null || rawValue === "") {
+  pendingSeasonStats[key] = null;
+  continue;
+}
 
-      if (!Number.isFinite(numericValue)) {
-        return res.status(400).json({
-          error: `${key} must be a valid whole number.`
-        });
-      }
+const numericValue = Number(rawValue);
+
+if (!Number.isFinite(numericValue)) {
+  return res.status(400).json({
+    error: `${key} must be a valid whole number.`
+  });
+}
 
       if (!currentSeason) {
         return res.status(400).json({
@@ -496,25 +497,30 @@ async function applyPendingUpdates(player, approvingCoach) {
     }
 
     for (const statName of seasonStatFields) {
-      if (!Object.prototype.hasOwnProperty.call(stats, statName)) {
-        continue;
-      }
+  if (!Object.prototype.hasOwnProperty.call(stats, statName)) {
+    continue;
+  }
 
-      const value = stats[statName];
+  const value = stats[statName];
 
-      // Second backend safety layer.
-      if (value === "" || value === null || value === undefined) {
-        continue;
-      }
+  // Null means the player intentionally cleared this stat.
+  if (value === null || value === "") {
+    playerSeason[statName] = undefined;
+    continue;
+  }
 
-      const numericValue = Number(value);
+  if (value === undefined) {
+    continue;
+  }
 
-      if (!Number.isFinite(numericValue)) {
-        continue;
-      }
+  const numericValue = Number(value);
 
-      playerSeason[statName] = numericValue;
-    }
+  if (!Number.isFinite(numericValue)) {
+    continue;
+  }
+
+  playerSeason[statName] = numericValue;
+}
   }
 
   player.pendingUpdates = {};
